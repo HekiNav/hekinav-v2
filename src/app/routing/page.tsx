@@ -1,7 +1,7 @@
 "use client"
 import 'maplibre-gl/dist/maplibre-gl.css';
 import Map from 'react-map-gl/maplibre'
-import RoutingSideBar from '../components/routingsidebar';
+import RoutingSideBar from '@/components/routingsidebar';
 
 export default function Routing() {
     return (

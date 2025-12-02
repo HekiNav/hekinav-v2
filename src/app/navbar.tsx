@@ -1,6 +1,6 @@
 "use client"
 import { usePathname } from "next/navigation"
-import { NavBarItem } from "./components/navbaritem"
+import { NavBarItem } from "../components/navbaritem"
 
 export interface PagePath {
     n: string,
