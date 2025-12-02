@@ -18,14 +18,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const paths = process.env.PATHS ? JSON.parse(process.env.PATHS): []
+  const paths = process.env.PATHS ? JSON.parse(process.env.PATHS) : []
   return (
     <html lang="en">
       <body
         className={`${rubik.variable} antialiased min-h-screen `}
       >
-        <NavBar paths={paths}></NavBar>
-        {children}
+        <div className="h-screen flex flex-col">
+          <NavBar paths={paths}></NavBar>
+          <div className="grow">
+            {children}
+          </div>
+        </div>
+
       </body>
     </html>
   );
