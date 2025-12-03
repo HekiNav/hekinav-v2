@@ -12,7 +12,7 @@ export default function RoutingSideBar() {
         } else if (name == "destination") {
             setDestination(value as Suggestion)
         }
-        if (origin && destination) {
+        if ((origin || (name == "origin" && value)) && (destination || (name == "destination" && value))) {
             console.log("ROUTING HAPPENS HERE")
         }
     }
@@ -47,6 +47,7 @@ export function getIconTypeForAutocomplete({ layer, ...props }: { [key: string]:
         case "address":
             return { icon: faLocationDot }
         case "bikestation":
+        case "bikepark":
             return { icon: faBicycle }
         case "venue":
             return { icon: faStoreAlt }
@@ -66,6 +67,7 @@ export function getIconTypeForAutocomplete({ layer, ...props }: { [key: string]:
                 case "AIRPLANE":
                     return { icon: faPlane }
                 case "TRAM":
+                case "SPEEDTRAM":
                     return { icon: faTrainTram }
                 default:
                     console.warn("No icon for station/stop of type", props.addendum && props.addendum.GTFS.modes[0])
