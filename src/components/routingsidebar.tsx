@@ -1,3 +1,4 @@
+"use client"
 import { useState } from 'react'
 import InputField, { Suggestion } from './inputfield'
 import { faBicycle, faBusAlt, faLocationDot, faPlane, faQuestion, faRoad, faSailboat, faStoreAlt, faTrain, faTrainSubway, faTrainTram } from '@fortawesome/free-solid-svg-icons'
@@ -18,9 +19,11 @@ export default function RoutingSideBar() {
     }
     return (
         <div className="p-4 min-w-80 w-4/10">
-            <InputField placeholder='Origin' icon={{ icon: faLocationDot }} name="origin" onValueSet={onValueSet} suggestionFunction={generateSuggestions}></InputField>
+            <h1 className='font-bold text-xl mb-2'>Where to?</h1>
+            <InputField placeholder='Origin' icon={{ icon: faLocationDot, className: "text-green-500" }} name="origin" onValueSet={onValueSet} suggestionFunction={generateSuggestions}></InputField>
             <div className='m-2'></div>
-            <InputField placeholder='Destination' icon={{ icon: faLocationDot }} name="destination" onValueSet={onValueSet} suggestionFunction={generateSuggestions}></InputField>
+            <InputField placeholder='Destination' icon={{ icon: faLocationDot, className: "text-pink-500" }} name="destination" onValueSet={onValueSet} suggestionFunction={generateSuggestions}></InputField>
+            
         </div>
     )
 }
@@ -45,36 +48,38 @@ export async function getAutocomplete(text: string): Promise<Suggestion[]> {
 export function getIconTypeForAutocomplete({ layer, ...props }: { [key: string]: any }) {
     switch (layer) {
         case "address":
-            return { icon: faLocationDot }
+            return { icon: faLocationDot, className: "text-stone-600" }
         case "bikestation":
+            return { icon: faBicycle, className: "text-stone-600"  }
         case "bikepark":
-            return { icon: faBicycle }
+            return { icon: faBicycle, className: "text-yellow-600" }
         case "venue":
-            return { icon: faStoreAlt }
+            return { icon: faStoreAlt, className: "text-stone-600"  }
         case "street":
-            return { icon: faRoad }
+            return { icon: faRoad, className: "text-stone-600" }
         case "stop":
         case "station":
             switch (props.addendum && props.addendum.GTFS.modes[0]) {
                 case "BUS":
-                    return { icon: faBusAlt }
+                    return { icon: faBusAlt, className: "text-blue-500" }
                 case "SUBWAY":
-                    return { icon: faTrainSubway }
+                    return { icon: faTrainSubway, className: "text-orange-500" }
                 case "RAIL":
-                    return { icon: faTrain }
+                    return { icon: faTrain, className: "text-purple-600" }
                 case "FERRY":
-                    return { icon: faSailboat }
+                    return { icon: faSailboat, className: "text-cyan-600" }
                 case "AIRPLANE":
-                    return { icon: faPlane }
+                    return { icon: faPlane, className: "text-blue-800" }
                 case "TRAM":
+                    return { icon: faTrainTram, className: "text-green-600"}
                 case "SPEEDTRAM":
-                    return { icon: faTrainTram }
+                    return { icon: faTrainTram, className: "text-teal-600"}
                 default:
                     console.warn("No icon for station/stop of type", props.addendum && props.addendum.GTFS.modes[0])
-                    return { icon: faLocationDot }
+                    return { icon: faLocationDot, className: "text-stone-600" }
             }
         default:
             console.warn("No icon for result from layer ", layer)
-            return { icon: faQuestion }
+            return { icon: faQuestion, className: "text-pink-500" }
     }
 }

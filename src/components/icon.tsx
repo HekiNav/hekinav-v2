@@ -8,7 +8,7 @@ export interface IconProps extends FontAwesomeIconProps, PropsWithChildren {
 export default function Icon(props: IconProps) {
     return (
         <div className={`${props.className || ""} flex items-center`}>
-            <FontAwesomeIcon className=" h-5! w-5!" {...props} widthAuto></FontAwesomeIcon>
+            <FontAwesomeIcon {...{...props, className: `h-5! w-5! ${props.className}`}} widthAuto></FontAwesomeIcon>
         </div>
     )
 } 
