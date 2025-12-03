@@ -1,13 +1,13 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { type IconProp } from "@fortawesome/fontawesome-svg-core"
+import { IconProps } from "./icon"
+import Icon from "./icon"
 
 export interface IconItemProps extends React.PropsWithChildren {
-    icon: IconProp
+    icon: IconProps
 }
 export default function IconItem({children, icon}: IconItemProps) {
     return (
         <div className="flex flex-row gap-2 items-center">
-            <FontAwesomeIcon icon={icon} className="shrink"></FontAwesomeIcon>
+            <Icon {...icon}></Icon>
             {children}
         </div>
     )
