@@ -1,9 +1,15 @@
 "use client"
-import { useState } from 'react'
+import { RefObject, useState } from 'react'
 import InputField, { Suggestion } from './inputfield'
 import { faBicycle, faBusAlt, faLocationDot, faPlane, faQuestion, faRoad, faSailboat, faStoreAlt, faTrain, faTrainSubway, faTrainTram } from '@fortawesome/free-solid-svg-icons'
+import { MapRef } from 'react-map-gl/maplibre'
+import RoutingTimeInput from './routingtimeinput'
 
-export default function RoutingSideBar() {
+export interface RoutingSideBarProps {
+    map?: RefObject<MapRef>
+}
+
+export default function RoutingSideBar(props: RoutingSideBarProps) {
     const generateSuggestions = getAutocomplete
     const [origin, setOrigin] = useState<Suggestion | null>(null)
     const [destination, setDestination] = useState<Suggestion | null>(null)
@@ -13,17 +19,24 @@ export default function RoutingSideBar() {
         } else if (name == "destination") {
             setDestination(value as Suggestion)
         }
+        console.log(value)
+        const suggestion = value as Suggestion
+        const center: [number, number] = [suggestion.properties?.lat, suggestion.properties?.lon]
+        props.map?.current.flyTo({
+            center: center,
+            zoom: 11
+        })
         if ((origin || (name == "origin" && value)) && (destination || (name == "destination" && value))) {
             console.log("ROUTING HAPPENS HERE")
         }
     }
     return (
         <div className="p-4 min-w-80 w-4/10">
-            <h1 className='font-bold text-xl mb-2'>Where to?</h1>
+            <h1 className='font-bold font-rounded text-xl mb-2'>Where to?</h1>
             <InputField placeholder='Origin' icon={{ icon: faLocationDot, className: "text-green-500" }} name="origin" onValueSet={onValueSet} suggestionFunction={generateSuggestions}></InputField>
             <div className='m-2'></div>
             <InputField placeholder='Destination' icon={{ icon: faLocationDot, className: "text-pink-500" }} name="destination" onValueSet={onValueSet} suggestionFunction={generateSuggestions}></InputField>
-            
+            <RoutingTimeInput></RoutingTimeInput>
         </div>
     )
 }
@@ -41,7 +54,11 @@ export async function getAutocomplete(text: string): Promise<Suggestion[]> {
             const value = f.properties && f.properties[key]
             if (value && prev.split(", ").findLast(() => true) != value) return `${prev}${prev.length ? ", " : ""}${value}`
             return prev
-        }, "")
+        }, ""),
+        properties: {
+            lat: (f.geometry as GeoJSON.Point).coordinates[0],
+            lon: (f.geometry as GeoJSON.Point).coordinates[1]
+        }
     }))
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -3,7 +3,8 @@ import IconItem from "./iconitem";
 import { ChangeEvent, useState } from "react"
 import { IconProps } from "./icon";
 
-export interface Suggestion<T = object> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface Suggestion<T = any> {
     icon: IconProps,
     text: string,
     desc?: string,

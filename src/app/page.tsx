@@ -1,7 +1,7 @@
 import RoutingSideBar from "@/components/routingsidebar";
 export default function Home() {
   return (
-    <div className="bg-white font-sans p-4">
+    <div className="bg-white p-4">
       <main>
         <div className="flex flex-row pb-2">
           <RoutingSideBar></RoutingSideBar>

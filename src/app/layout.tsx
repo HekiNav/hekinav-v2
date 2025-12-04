@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
-import { Rubik } from "next/font/google";
+import localFont from "next/font/local"
 import "./globals.css";
 import NavBar from "./navbar";
 
-const rubik = Rubik({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const gothamRounded = localFont({
+  src: './fonts/gotham-rounded-medium.woff2',
+  variable: "--gotham-rounded"
+})
+const gothamXNarrow = localFont({
+  src: './fonts/gotham-xnarrow-medium.woff2',
+  variable: "--gotham-xnarrow"
+})
 
 export const metadata: Metadata = {
   title: "Hekinav",
-  description: "Public transport rour",
+  description: "Public transport routing",
 };
 
 export default function RootLayout({
@@ -22,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${rubik.variable} antialiased min-h-screen `}
+        className={`${gothamRounded.variable} ${gothamXNarrow.variable} antialiased min-h-screen `}
       >
         <div className="h-screen flex flex-col">
           <NavBar paths={paths}></NavBar>
