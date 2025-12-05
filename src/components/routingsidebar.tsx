@@ -24,7 +24,10 @@ export default function RoutingSideBar(props: RoutingSideBarProps) {
         const center: [number, number] = [suggestion.properties?.lat, suggestion.properties?.lon]
         props.map?.current.flyTo({
             center: center,
-            zoom: 11
+            zoom: 14,
+            duration: 5000,
+            animate: true,
+            essential: true
         })
         if ((origin || (name == "origin" && value)) && (destination || (name == "destination" && value))) {
             console.log("ROUTING HAPPENS HERE")

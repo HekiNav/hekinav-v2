@@ -1,5 +1,6 @@
+"use server"
 import RoutingSideBar from "@/components/routingsidebar";
-export default function Home() {
+export default async function Home() {
   return (
     <div className="bg-white p-4">
       <main>

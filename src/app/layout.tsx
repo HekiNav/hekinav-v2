@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local"
 import "./globals.css";
-import NavBar from "./navbar";
+import NavBar, { PagePath } from "./navbar";
+import ConfigProvider from "@/components/configprovider";
 
 const gothamRounded = localFont({
   src: './fonts/gotham-rounded-medium.woff2',
@@ -17,12 +18,21 @@ export const metadata: Metadata = {
   description: "Public transport routing",
 };
 
+export interface HekinavConfig {
+  paths: PagePath[],
+  mapStyle: string
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const paths = process.env.PATHS ? JSON.parse(process.env.PATHS) : []
+  const hekinavConfig: HekinavConfig = {
+    paths: [{ n: "Home", p: "/" }, { n: "Routing", p: "/routing" }, { n: "Test", p: "/test" }],
+    mapStyle: "/style.json"
+  }
+  const paths = hekinavConfig.paths
   return (
     <html lang="en">
       <body
@@ -31,7 +41,9 @@ export default function RootLayout({
         <div className="h-screen flex flex-col">
           <NavBar paths={paths}></NavBar>
           <div className="grow">
-            {children}
+            <ConfigProvider config={hekinavConfig}>
+              {children}
+            </ConfigProvider>
           </div>
         </div>
 

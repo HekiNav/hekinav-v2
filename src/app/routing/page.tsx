@@ -1,9 +1,15 @@
-import RoutingContent from "./content"
+"use client"
+import 'maplibre-gl/dist/maplibre-gl.css';
+import RoutingSideBar from '@/components/routingsidebar';
+import { useContext } from 'react';
 
-export default function Routing() {
+import { mapContext } from './layout';
+
+export default function RoutingContent() {
+    const mapRef = useContext(mapContext)
     return (
         <>
-            <RoutingContent mapStyle={process.env.MAP_STYLE || "/style.json"}></RoutingContent>
+            <RoutingSideBar map={mapRef}></RoutingSideBar>
         </>
     )
 }
