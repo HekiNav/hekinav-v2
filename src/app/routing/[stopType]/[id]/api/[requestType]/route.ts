@@ -1,5 +1,5 @@
 import { type NextRequest } from 'next/server'
-import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
+import { ApolloClient, DocumentNode, HttpLink, InMemoryCache, gql } from "@apollo/client";
 import { StopType } from '../../departures/page';
 
 const { DIGITRANSIT_SUBSCRIPTION_KEY = "" } = process.env
@@ -14,7 +14,12 @@ const client = new ApolloClient({
 });
 
 
-const querys = {
+export const querys: {
+    [key: string]: {
+        stop: DocumentNode
+        station: DocumentNode
+    }
+} = {
     departures:  {
         stop: gql`
     query Departures($id: String!) {

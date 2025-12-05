@@ -1,7 +1,7 @@
 "use server"
 
 import Label from "@/components/label"
-import { getStopData } from "../api/[requestType]/route"
+import { getStopData, querys } from "../api/[requestType]/route"
 import DepTime from "@/components/deptime"
 
 export enum StopType {
@@ -15,7 +15,8 @@ export default async function StopDeparturesView({
   params: Promise<{ id: string, stopType: StopType }>
 }) {
   const { id, stopType } = await params
-  const { data, error } = await getStopData(decodeURIComponent(id), "departures", stopType)
+
+  const { data, error } = await getStopData(decodeURIComponent(id),"departures", stopType)
   if (error) return (
     <div className="p-4 min-w-80 w-4/10">
       <h1 className="text-xl text-red-500">500 Internal server error</h1>
