@@ -1,18 +1,16 @@
-import { LngLat, MapGeoJSONFeature, Popup } from "react-map-gl/maplibre";
+import { MapGeoJSONFeature } from "react-map-gl/maplibre";
 import IconItem from "./iconitem";
 import { faBusAlt, faLocationDot, faPlane, faSailboat, faTrain, faTrainSubway, faTrainTram } from "@fortawesome/free-solid-svg-icons";
 import Label from "./label";
 
-export interface MultiSelectPopupProps {
-    pos: LngLat,
+export interface MultiSelectPopupContentProps {
     items: MapGeoJSONFeature[]
     onClick: (item: MapGeoJSONFeature) => void
 }
 
-export default function MultiSelectPopup({ pos, items, onClick }: MultiSelectPopupProps) {
+export default function MultiSelectPopupContent({ items, onClick }: MultiSelectPopupContentProps) {
     console.log(items)
     return (
-        <Popup latitude={pos.lat} longitude={pos.lng}>
             <div className="flex flex-col gap-2 font-narrow text-lg">
                 {...items.map((e, i) =>
                     <div onClick={() => onClick(e)} key={`multi-select-popup-item-${i}`}>
@@ -24,7 +22,6 @@ export default function MultiSelectPopup({ pos, items, onClick }: MultiSelectPop
                 )}
             </div>
 
-        </Popup>
     )
 }
 function getIcon(type: string) {

@@ -19,6 +19,10 @@
             "type": "vector"
         },
         "stops": {
+            "url": "https://kartat.hsl.fi/jore/tiles/regular-stops/index.json",
+            "type": "vector"
+        },
+        "near-stops": {
             "url": "https://kartat.hsl.fi/jore/tiles/near-bus-stops/index.json",
             "type": "vector"
         },

@@ -3,13 +3,18 @@
 import Label from "@/components/label"
 import { getStopData } from "../api/[requestType]/route"
 
+export enum StopType {
+  STOP = "stop",
+  STATION = "station"
+}
+
 export default async function StopDeparturesView({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string, stopType: StopType }>
 }) {
-  const { id } = await params
-  const { data, error } = await getStopData(decodeURIComponent(id), "departures")
+  const { id, stopType } = await params
+  const { data, error } = await getStopData(decodeURIComponent(id), "departures", stopType)
   if (error) return (
     <div className="p-4 min-w-80 w-4/10">
       <h1 className="text-xl text-red-500">500 Internal server error</h1>
@@ -21,7 +26,7 @@ export default async function StopDeparturesView({
   console.log(data)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { stoptimesWithoutPatterns, name, desc, platformCode, code } = (data as any).stop
+  const { stoptimesWithoutPatterns, name, desc, platformCode, code } = (data as any)[stopType]
 
   return (
     <div className="p-4 min-w-80 w-4/10 flex flex-col gap-2 h-full">
