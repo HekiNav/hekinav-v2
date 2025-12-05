@@ -1,13 +1,9 @@
 "use server"
 
 import Label from "@/components/label"
-import { getStopData, querys } from "../api/[requestType]/route"
+import { getStopData } from "../api/[requestType]/route"
 import DepTime from "@/components/deptime"
-
-export enum StopType {
-  STOP = "stop",
-  STATION = "station"
-}
+import { StopType } from "@/app/routing/layout"
 
 export default async function StopDeparturesView({
   params,
@@ -80,6 +76,7 @@ const colors: {
   0: "bg-green-600",
   900: "bg-teal-600",
 }
+
 export interface DepartureRow {
   arrivalDelay: number
 

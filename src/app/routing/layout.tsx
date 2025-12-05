@@ -76,3 +76,7 @@ export default function RoutingLayout({
 export function getPageUrlFromStopIdWithoutPrefix(id: string, terminalId?: string) {
     return `/routing/${terminalId ? "station" : "stop"}/HSL:${terminalId || id}/departures`
 }
+export enum StopType {
+  STOP = "stop",
+  STATION = "station"
+}

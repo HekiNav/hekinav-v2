@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server'
 import { ApolloClient, DocumentNode, HttpLink, InMemoryCache, gql } from "@apollo/client";
-import { StopType } from '../../departures/page';
+import { StopType } from '@/app/routing/layout';
 
 const { DIGITRANSIT_SUBSCRIPTION_KEY = "" } = process.env
 
@@ -93,11 +93,11 @@ export const querys: {
 }
 type StopRequestType = keyof typeof querys
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string, requestType: StopRequestType, stopType: StopType }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string, requestType: string, stopType: string }> }) {
 
     const { id, requestType, stopType } = await params
 
-    const result = await getStopData(id, requestType, stopType)
+    const result = await getStopData(id, requestType, stopType as StopType)
 
     return Response.json(result)
 }
