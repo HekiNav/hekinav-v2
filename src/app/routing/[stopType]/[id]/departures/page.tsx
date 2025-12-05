@@ -2,6 +2,7 @@
 
 import Label from "@/components/label"
 import { getStopData } from "../api/[requestType]/route"
+import DepTime from "@/components/deptime"
 
 export enum StopType {
   STOP = "stop",
@@ -23,7 +24,6 @@ export default async function StopDeparturesView({
       </div>
     </div>
   )
-  console.log(data)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { stoptimesWithoutPatterns, name, desc, platformCode, code } = (data as any)[stopType]
@@ -38,17 +38,19 @@ export default async function StopDeparturesView({
         <div><Label hidden={!code} className="p-1 text-sm">{code} </Label></div>
         <div hidden={!desc} className=" text-stone-600">{desc}</div>
       </div>
-      <div className="grow border-2 border-stone-600 flex flex-col gap-0 p-2">
+      <div className="grow border-2 border-stone-600 flex flex-col p-2">
         {...(stoptimesWithoutPatterns as Array<DepartureRow>).map((dep, i) => {
           const color = colors[dep.trip.route.type]
           if (!color) console.log(dep.trip.route.type)
           return (
-            <div key={i} className="flex flex-row">
-              <div>
+            <div key={i} className="flex flex-row justify-between gap-5">
+              <div className="shrink truncate">
                 <Label className={"mr-1 text-white " + color}>{dep.trip.routeShortName}</Label>
                 {dep.headsign}
               </div>
-
+              <div className="text-nowrap">
+                <DepTime dep={dep}></DepTime>
+              </div>
             </div>
           )
         })}

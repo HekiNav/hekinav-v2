@@ -19,7 +19,6 @@ export default function RoutingSideBar(props: RoutingSideBarProps) {
         } else if (name == "destination") {
             setDestination(value as Suggestion)
         }
-        console.log(value)
         const suggestion = value as Suggestion
         const center: [number, number] = [suggestion.properties?.lat, suggestion.properties?.lon]
         props.map?.current.flyTo({
