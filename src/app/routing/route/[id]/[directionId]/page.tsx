@@ -3,17 +3,26 @@
 import Label from "@/components/label"
 import { getRouteData } from "../api/[requestType]/route"
 import DepTime from "@/components/deptime"
-import { mapContext } from "@/app/routing/layout"
-import { useContext } from "react"
 import Link from "next/link"
 import RouteItem from "@/components/routeitem"
+import { redirect } from "next/navigation"
+import Dropdown, { DropdownItem } from "@/components/dropdown"
+import NavDropdown from "@/components/navdropdown"
 
 export default async function RouteDeparturesView({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string, directionId: string }>
 }) {
-  const { id } = await params
+  const { id, directionId } = await params
+
+  const direction = Number(directionId[1])
+
+  console.log(direction)
+
+  if (Number.isNaN(direction)) {
+    redirect(`/routing/route/${id}/d0`)
+  }
 
   const { data, error } = await getRouteData(decodeURIComponent(id), "departures")
 
@@ -29,10 +38,28 @@ export default async function RouteDeparturesView({
   )
 
 
-  const {type, longName, shortName, stops} = (data.route as Route);
+
+  const { type, longName, shortName, patterns } = (data.route as Route);
+
 
   const color = colors[type]
   const borderColor = borderColors[type]
+
+  const stops = patterns[direction].stops
+
+  const options: DropdownItem[] = patterns.map(p => {
+    const first = p.stops[0].name
+    const last = p.stops[p.stops.length - 1].name
+
+    return { value: p.directionId, label: `${first} => ${last}` }
+  }).reduce((unique, o) => {
+    if (!unique.some(obj => obj.value === o.value)) {
+      unique.push(o);
+    }
+    return unique;
+  }, new Array<DropdownItem>());
+
+  console.log(patterns)
 
   return (
     <div className="p-4 min-w-80 w-4/10 flex flex-col gap-2 ">
@@ -40,11 +67,14 @@ export default async function RouteDeparturesView({
         <div><Label className={`text-white ${color}`} hidden={!shortName}>{shortName}</Label></div>
         <span hidden={!longName} className="text-2xl">{longName}</span>
       </div>
+      <div>
+        <NavDropdown defaultValue={direction} options={options} preItemValue={`/routing/route/${id}/d`} postItemValue=""/>
+      </div>
       <div className="grow border-2 border-stone-600 flex flex-col p-2 overflow-scroll">
         {...stops.map((stop, i) => {
           return (
             <Link href={`/routing/stop/${stop.gtfsId}/departures`} key={i} className="flex flex-row justify-between gap-5">
-              <RouteItem color1={i == 0 ? undefined : color} color2={i == stops.length-1 ? undefined : color} borderColor={borderColor}>
+              <RouteItem color1={i == 0 ? undefined : color} color2={i == stops.length - 1 ? undefined : color} borderColor={borderColor}>
                 {stop.name}
               </RouteItem>
               {/* <div className="text-nowrap">
@@ -99,7 +129,7 @@ const borderColors: {
   109: "border-purple-600",
   4: "border-cyan-600",
   705: "border-blue-800",
-  704: "border-blue-500", 
+  704: "border-blue-500",
   0: "border-green-600",
   900: "border-teal-600",
 }
@@ -112,7 +142,6 @@ export interface Route {
   shortName: string
   longName: string
   type: keyof typeof colors
-  stops: RouteStop[]
 }
 export interface RouteStop {
   name: string
@@ -128,4 +157,5 @@ export interface RoutePattern {
     length: number,
     points: string
   }
+  stops: RouteStop[]
 }

@@ -25,22 +25,23 @@ export const querys: {
                 name
             }
             patterns {
+                directionId
                 patternGeometry {
                     length
                     points
+                }
+                stops {
+                    gtfsId
+                    name
+                    code
+                    platformCode
+                    lat
+                    lon
                 }
             }
             shortName
             longName
             type
-            stops {
-                gtfsId
-                name
-                code
-                platformCode
-                lat
-                lon
-            }
         }
     }
   `
