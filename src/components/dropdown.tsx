@@ -38,7 +38,6 @@ export default function Dropdown({ options, defaultValue, onSet, inline = false}
                 type="button"
                 className={`inline-flex justify-between w-full ${!inline && "bg-white px-4 py-2 border-2"} ${inline && "mr-1"}  text-sm font-medium text-black focus:border-blue-500`}
                 onFocus={() => toggleDropdown(true)}
-                onBlur={() => toggleDropdown(false)}
             >
                 {selected}
                 <Icon className={`${isOpen ? "text-blue-500" : ""} `} icon={faCaretDown}></Icon>
@@ -49,13 +48,13 @@ export default function Dropdown({ options, defaultValue, onSet, inline = false}
                                     ${!inline && "bg-white border-2 border-blue-500"} right-0 left-0 z-1001
                                      border-t-0`}>
                     <div className="py-1">
-                        {options.filter(o => o.label != selected).map((item, index) => (
+                        {options.map((item, index) => (
                             <a
                                 key={index}
                                 href="#"
-                                className="block px-4 py-2
+                                className={`block px-4 py-2
                                                text-sm text-black
-                                               hover:bg-gray-100"
+                                               hover:bg-gray-100`}
                                 onMouseDown={() => handleSelect(item)}
                             >
                                 {item.label}
