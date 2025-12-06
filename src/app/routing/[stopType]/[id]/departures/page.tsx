@@ -61,6 +61,7 @@ export default async function StopDeparturesView({
 }
 const colors: {
   701: string,
+  700: string,
   702: string,
   1: string,
   0: string,
@@ -71,6 +72,7 @@ const colors: {
   900: string,
 } = {
   701: "bg-blue-500",
+  700: "bg-blue-500",
   702: "bg-orange-500",
   1: "bg-orange-500",
   109: "bg-purple-600",

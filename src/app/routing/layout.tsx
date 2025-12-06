@@ -53,7 +53,7 @@ export default function RoutingLayout({
     }
 
     return (
-        <div className="h-full max-h-full flex flex-row">
+        <div className="h-full max-h-screen flex flex-row">
             <mapContext.Provider value={mapRef}>
                 {children}
             </mapContext.Provider>
