@@ -1,6 +1,7 @@
 import { type NextRequest } from 'next/server'
-import { ApolloClient, DocumentNode, HttpLink, InMemoryCache, gql } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
 import { StopType } from '@/app/routing/layout';
+import { TypedDocumentNode } from '@apollo/client';
 
 const { DIGITRANSIT_SUBSCRIPTION_KEY = "" } = process.env
 
@@ -16,8 +17,8 @@ const client = new ApolloClient({
 
 export const querys: {
     [key: string]: {
-        stop: DocumentNode
-        station: DocumentNode
+        stop: TypedDocumentNode
+        station: TypedDocumentNode
     }
 } = {
     departures:  {
@@ -48,6 +49,7 @@ export const querys: {
 
                 trip {
                     route {
+                        gtfsId
                         type
                     }
                     routeShortName  
@@ -83,6 +85,7 @@ export const querys: {
                 trip {
                     route {
                         type
+                        gtfsId
                     }
                     routeShortName  
                 }
