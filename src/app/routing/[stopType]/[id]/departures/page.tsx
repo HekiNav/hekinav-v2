@@ -4,6 +4,7 @@ import Label from "@/components/label"
 import { getStopData } from "../api/[requestType]/route"
 import DepTime from "@/components/deptime"
 import { StopType } from "@/app/routing/layout"
+import Link from "next/link"
 
 export default async function StopDeparturesView({
   params,
@@ -12,8 +13,8 @@ export default async function StopDeparturesView({
 }) {
   const { id, stopType } = await params
 
-  const { data, error } = await getStopData(decodeURIComponent(id),"departures", stopType)
-  if (error) return (
+  const { data, error } = await getStopData(decodeURIComponent(id), "departures", stopType)
+  if (error || !data) return (
     <div className="p-4 min-w-80 w-4/10">
       <h1 className="text-xl text-red-500">500 Internal server error</h1>
       <div className="text-lg">
@@ -42,8 +43,11 @@ export default async function StopDeparturesView({
           return (
             <div key={i} className="flex flex-row justify-between gap-5">
               <div className="shrink truncate">
-                <Label className={"mr-1 text-white " + color}>{dep.trip.routeShortName}</Label>
-                {dep.headsign}
+                <Link href={`/routing/route/${dep.trip.route.gtfsId}/departures`}>
+                  <Label className={"mr-1 text-white " + color}>{dep.trip.routeShortName}</Label>
+                  {dep.headsign}
+                </Link>
+
               </div>
               <div className="text-nowrap">
                 <DepTime dep={dep}></DepTime>
@@ -57,6 +61,7 @@ export default async function StopDeparturesView({
 }
 const colors: {
   701: string,
+  700: string,
   702: string,
   1: string,
   0: string,
@@ -67,6 +72,7 @@ const colors: {
   900: string,
 } = {
   701: "bg-blue-500",
+  700: "bg-blue-500",
   702: "bg-orange-500",
   1: "bg-orange-500",
   109: "bg-purple-600",
@@ -95,6 +101,7 @@ export interface DepartureRow {
     routeShortName: string
     route: {
       type: keyof typeof colors
+      gtfsId: string
     }
   }
 }

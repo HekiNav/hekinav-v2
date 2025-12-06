@@ -17,7 +17,7 @@ export default function NavBar({paths}:NavBarProps) {
     const currPath = usePathname()
 
     return (
-        <div className="flex">
+        <div className="flex h-15">
             <div className="shadow-md/30 w-full p-2 flex gap-2 font-narrow">
                 {paths.map(({ p, n }, i) => {
                     const current = currPath == p
