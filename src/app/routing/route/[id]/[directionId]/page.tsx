@@ -1,7 +1,7 @@
 "use server"
 
 import Label from "@/components/label"
-import { getRouteData } from "../api/[requestType]/route"
+import { getRouteData } from "../api/[...extraParams]/route"
 import DepTime from "@/components/deptime"
 import Link from "next/link"
 import RouteItem from "@/components/routeitem"
@@ -18,17 +18,18 @@ export default async function RouteDeparturesView({
 
   const direction = Number(directionId[1])
 
-  console.log(direction)
 
   if (Number.isNaN(direction)) {
     redirect(`/routing/route/${id}/d0`)
   }
+  const idDecoded = decodeURIComponent(id)
 
-  const { data, error } = await getRouteData(decodeURIComponent(id), "departures")
+  const { data, error } = await getRouteData(idDecoded, "patterns")
+
+  const depData = await getRouteData(idDecoded, "departures", direction.toString())
 
 
-
-  if (error || !data) return (
+  if (error || depData.error || !depData.data || !data) return (
     <div className="p-4 min-w-80 w-4/10">
       <h1 className="text-xl text-red-500">500 Internal server error</h1>
       <div className="text-lg">
@@ -45,7 +46,10 @@ export default async function RouteDeparturesView({
   const color = colors[type]
   const borderColor = borderColors[type]
 
-  const stops = patterns[direction].stops
+  const pattern = patterns.find(p => p.code == `${idDecoded}:${direction}:01`)!
+
+
+  const stops = pattern.stops
 
   const options: DropdownItem[] = patterns.map(p => {
     const first = p.stops[0].name
@@ -59,27 +63,38 @@ export default async function RouteDeparturesView({
     return unique;
   }, new Array<DropdownItem>());
 
-  console.log(patterns)
 
   return (
-    <div className="p-4 min-w-80 w-4/10 flex flex-col gap-2 ">
+    <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 ">
       <div className="text-lg flex flex-row gap-2 items-center">
         <div><Label className={`text-white ${color}`} hidden={!shortName}>{shortName}</Label></div>
         <span hidden={!longName} className="text-2xl">{longName}</span>
       </div>
+      <h1 className="text-xl mt-4">Stops</h1>
       <div>
-        <NavDropdown defaultValue={direction} options={options} preItemValue={`/routing/route/${id}/d`} postItemValue=""/>
+        <NavDropdown defaultValue={direction} options={options} preItemValue={`/routing/route/${id}/d`} postItemValue="" />
       </div>
       <div className="grow border-2 border-stone-600 flex flex-col p-2 overflow-scroll">
         {...stops.map((stop, i) => {
+          const deps = depData.data?.route.patterns.find((p: RoutePattern) => p.code == pattern.code)?.stops.find((s: RouteStop) => s.gtfsId == stop.gtfsId).stopTimesForPattern
           return (
             <Link href={`/routing/stop/${stop.gtfsId}/departures`} key={i} className="flex flex-row justify-between gap-5">
               <RouteItem color1={i == 0 ? undefined : color} color2={i == stops.length - 1 ? undefined : color} borderColor={borderColor}>
-                {stop.name}
+                <div className="flex flex-row w-full justify-between">
+                  <div>
+                    <div className="-mb-2">{stop.name}</div>
+                    <Label className="text-xs bg-stone-300 mr-1 min-w-min">{stop.code}</Label>
+                    <Label hidden={!stop.platformCode} className="text-xs bg-stone-300">pl. {stop.platformCode}</Label>
+                  </div>
+                  <div hidden={deps.length < 2} className="flex flex-col items-end">
+                    <DepTime short dep={deps[0]}></DepTime>
+                    <div className="flex nowrap text-xs">
+                      Next&nbsp;<DepTime short dep={deps[1]}></DepTime>
+                    </div>
+                    
+                  </div>
+                </div>
               </RouteItem>
-              {/* <div className="text-nowrap">
-                <DepTime dep={stop}></DepTime>
-              </div> */}
             </Link>
           )
         })}
@@ -152,6 +167,7 @@ export interface RouteStop {
   gtfsId: string
 }
 export interface RoutePattern {
+  code: string,
   directionId: number,
   patternGeometry: {
     length: number,

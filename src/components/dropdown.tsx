@@ -44,7 +44,7 @@ export default function Dropdown({ options, defaultValue, onSet, inline = false}
             </button>
 
             {isOpen && (
-                <div className={`origin-top-right absolute
+                <div className={`origin-top-right absolute max-h-50 overflow-scroll
                                     ${!inline && "bg-white border-2 border-blue-500"} right-0 left-0 z-1001
                                      border-t-0`}>
                     <div className="py-1">
@@ -52,9 +52,8 @@ export default function Dropdown({ options, defaultValue, onSet, inline = false}
                             <a
                                 key={index}
                                 href="#"
-                                className={`block px-4 py-2
-                                               text-sm text-black
-                                               hover:bg-gray-100`}
+                                className={`block ${!inline && "hover:bg-gray-100 px-4 py-2"}
+                                               text-sm text-black`}
                                 onMouseDown={() => handleSelect(item)}
                             >
                                 {item.label}

@@ -28,9 +28,9 @@ export default function RoutingSideBar(props: RoutingSideBarProps) {
             animate: true,
             essential: true
         })
-        if ((origin || (name == "origin" && value)) && (destination || (name == "destination" && value))) {
-            console.log("ROUTING HAPPENS HERE")
-        }
+    }
+    function search() {
+        
     }
     return (
         <div className="p-4 min-w-80 w-4/10">
@@ -39,6 +39,7 @@ export default function RoutingSideBar(props: RoutingSideBarProps) {
             <div className='m-2'></div>
             <InputField placeholder='Destination' icon={{ icon: faLocationDot, className: "text-pink-500" }} name="destination" onValueSet={onValueSet} suggestionFunction={generateSuggestions}></InputField>
             <RoutingTimeInput></RoutingTimeInput>
+            <button className='border-2 w-full p-2 hover:border-blue-500 hover:text-blue-500' onClick={search}>Search</button>
         </div>
     )
 }

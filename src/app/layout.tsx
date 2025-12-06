@@ -38,7 +38,7 @@ export default function RootLayout({
       <body
         className={`${gothamRounded.variable} ${gothamXNarrow.variable} antialiased min-h-screen `}
       >
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col overflow-hidden">
           <NavBar paths={paths}></NavBar>
           <div style={{height: "calc(100vh - calc(var(--spacing) * 15))"}}>
             <ConfigProvider config={hekinavConfig}>

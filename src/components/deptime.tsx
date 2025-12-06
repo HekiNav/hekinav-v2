@@ -1,7 +1,8 @@
 import { DepartureRow } from "@/app/routing/[stopType]/[id]/departures/page";
 
 export interface DepTimeProps {
-    dep: DepartureRow
+    dep: DepartureRow,
+    short?: boolean
 }
 
 const delayColors = {
@@ -12,16 +13,16 @@ const delayColors = {
 
 
 
-export default function DepTime({ dep }: DepTimeProps) {
+export default function DepTime({ dep, short = false }: DepTimeProps) {
     return (
         <span className="flex flex-row gap-3">
-            <span hidden={Math.round(dep.arrivalDelay / 60) == 0}>
+            <span hidden={short || Math.round(dep.arrivalDelay / 60) == 0}>
                 <span className={getDelayTime(dep.arrivalDelay)}>{dep.arrivalDelay > 0 && "+"}{Math.round(dep.arrivalDelay / 60)} min</span>
             </span>
             <span hidden={dep.realtime}>
                 ~{formatDepTime(dep.scheduledDeparture, dep.serviceDay)}
             </span>
-            <span hidden={!dep.realtime} className="text-lime-400">
+            <span hidden={!dep.realtime} className="text-lime-500">
                 {formatDepTime(dep.realtimeDeparture, dep.serviceDay)}
             </span>
         </span>

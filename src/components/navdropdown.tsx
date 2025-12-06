@@ -12,7 +12,6 @@ export default function NavDropdown({ defaultValue, options, preItemValue, postI
     const nav = useRouter()
     return (
         <Dropdown options={options} defaultValue={defaultValue} onSet={(item) => {
-            console.log(item)
             nav.push(`${preItemValue}${item.value}${postItemValue}`)
         }}></Dropdown>
     )

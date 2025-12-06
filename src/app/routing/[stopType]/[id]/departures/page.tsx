@@ -27,8 +27,8 @@ export default async function StopDeparturesView({
   const { stoptimesWithoutPatterns, name, desc, platformCode, code } = (data as any)[stopType]
 
   return (
-    <div className="p-4 min-w-80 w-4/10 flex flex-col gap-2 h-full">
-      <div className="text-lg flex flex-row gap-2 items-center">
+    <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 h-full">
+      <div className="text-lg flex flex-row gap-2 items-center -mb-3">
         <span className="text-2xl">{name}</span>
         <div><Label hidden={!platformCode}>pl. {platformCode}</Label></div>
       </div>
@@ -36,7 +36,8 @@ export default async function StopDeparturesView({
         <div><Label hidden={!code} className="p-1 text-sm">{code} </Label></div>
         <div hidden={!desc} className=" text-stone-600">{desc}</div>
       </div>
-      <div className="grow border-2 border-stone-600 flex flex-col p-2">
+      <h1 className="text-xl mt-4">Departures</h1>
+      <div className="grow border-2 border-stone-600 flex flex-col p-2  overflow-scroll">
         {...(stoptimesWithoutPatterns as Array<DepartureRow>).map((dep, i) => {
           const color = colors[dep.trip.route.type]
           if (!color) console.log(dep.trip.route.type)

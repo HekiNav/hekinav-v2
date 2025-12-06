@@ -16,7 +16,7 @@ export default function RoutingTimeInput({ initialTime = new Date() }: RoutingTi
     return (
         <div className="bg-blue-100 w-full my-2 p-2">
             <Dropdown inline options={[{ value: 0, label: "Departing" }, { value: 1, label: "Arriving" }]}></Dropdown>
-            at
+            <span className="mr-1">at</span>
             <Dropdown inline options={times}></Dropdown>
         </div>
     )
