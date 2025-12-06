@@ -5,6 +5,7 @@ import { getStopData } from "../api/[requestType]/route"
 import DepTime from "@/components/deptime"
 import { StopType } from "@/app/routing/layout"
 import Link from "next/link"
+import StopOnMap from "./mapHandler"
 
 export default async function StopDeparturesView({
   params,
@@ -23,11 +24,12 @@ export default async function StopDeparturesView({
     </div>
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { stoptimesWithoutPatterns, name, desc, platformCode, code } = (data as any)[stopType]
+  const stop = (data as { stop: Stop, station: Stop })[stopType],
+    { stoptimesWithoutPatterns, name, desc, platformCode, code } = stop
 
   return (
     <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 h-full">
+      <StopOnMap stop={stop}></StopOnMap>
       <div className="text-lg flex flex-row gap-2 items-center -mb-3">
         <span className="text-2xl">{name}</span>
         <div><Label hidden={!platformCode}>pl. {platformCode}</Label></div>
@@ -82,6 +84,15 @@ const colors: {
   704: "bg-blue-500",
   0: "bg-green-600",
   900: "bg-teal-600",
+}
+export interface Stop {
+  name: string
+  desc: string
+  code: string
+  platformCode: string
+  lat: number
+  lon: number
+  stoptimesWithoutPatterns: DepartureRow[]
 }
 
 export interface DepartureRow {
