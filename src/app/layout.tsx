@@ -40,7 +40,7 @@ export default function RootLayout({
       >
         <div className="h-screen flex flex-col">
           <NavBar paths={paths}></NavBar>
-          <div className="grow">
+          <div style={{height: "calc(100vh - calc(var(--spacing) * 15))"}}>
             <ConfigProvider config={hekinavConfig}>
               {children}
             </ConfigProvider>
