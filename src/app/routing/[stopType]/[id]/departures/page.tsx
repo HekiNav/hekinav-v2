@@ -93,6 +93,9 @@ export interface Stop {
   lat: number
   lon: number
   stoptimesWithoutPatterns: DepartureRow[]
+  routes: {
+    type: number
+  }[]
 }
 
 export interface DepartureRow {

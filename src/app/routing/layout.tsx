@@ -1,33 +1,30 @@
 "use client"
-import { useConfig } from "@/components/configprovider";
-import MultiSelectPopup from "@/components/multiselectpopup";
-import { FeatureCollection, GeoJsonObject, GeoJsonProperties, Geometry } from "geojson";
-import { Feature, GeoJSONFeature, LngLat, MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
-import { useRouter } from "next/navigation";
-import { createContext, ReactNode, RefObject, useContext, useRef, useState } from "react";
+import { FeatureCollection } from "geojson";
+import { createContext } from "react";
 import RoutingMap from "./map";
-import { MapRef } from "react-map-gl/maplibre";
+import { MapProvider } from "react-map-gl/maplibre";
 
 
 
-export const mapContext = createContext<{ map: RefObject<MapRef>, data: FeatureCollection }>({} as never)
+export const mapContext = createContext<{ data: FeatureCollection }>({} as never)
 
 export default function RoutingLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const hekinavConfig = useConfig()
-    const mapRef = useRef<MapRef>({} as never)
 
     return (
-        <div className="h-full max-h-screen flex flex-row">
-            <mapContext.Provider value={{ map: mapRef, data: { type: "FeatureCollection", features: [] } }}>
-                {children}
-                <RoutingMap></RoutingMap>
-            </mapContext.Provider>
+        <MapProvider>
+            <div className="h-full max-h-screen flex flex-row">
+                <mapContext.Provider value={{ data: { type: "FeatureCollection", features: [] } }}>
+                    {children}
+                    <RoutingMap></RoutingMap>
+                </mapContext.Provider>
 
-        </div>
+            </div>
+        </MapProvider>
+
     );
 }
 // 💀

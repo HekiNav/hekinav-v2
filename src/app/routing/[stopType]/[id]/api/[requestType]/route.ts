@@ -31,6 +31,9 @@ export const querys: {
             platformCode
             lat
             lon
+            routes {
+                type
+            }
             stoptimesWithoutPatterns(numberOfDepartures: 50,omitCanceled: false, omitNonPickups: false){
             
                 arrivalDelay
@@ -66,6 +69,9 @@ export const querys: {
             platformCode
             lat
             lon
+            routes {
+                type
+            }
             stoptimesWithoutPatterns(numberOfDepartures: 50,omitCanceled: false, omitNonPickups: false){
             
                 arrivalDelay

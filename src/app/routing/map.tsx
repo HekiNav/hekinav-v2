@@ -1,24 +1,29 @@
 import { ReactNode, useContext, useState } from "react"
 import { getPageUrlFromStopIdWithoutPrefix, mapContext } from "./layout"
-import Map, { Layer, LngLat, MapGeoJSONFeature, MapMouseEvent, MapRef, Source } from "react-map-gl/maplibre";
+import Map, { Layer, LngLat, MapGeoJSONFeature, MapMouseEvent, Source, useMap } from "react-map-gl/maplibre";
 import { useConfig } from "@/components/configprovider";
 import MultiSelectPopup from "@/components/multiselectpopup";
 import { useRouter } from "next/navigation";
 
 export default function RoutingMap() {
-    const { data, map } = useContext(mapContext)
-    console.log(data)
+    const { data } = useContext(mapContext)
+    const { map } = useMap()!
+
     const hekinavConfig = useConfig()
 
-    function onMapReady() {
-        map.current.off("click", onFeatureClick)
-        map.current.on("click", onFeatureClick)
-    }
+
     const [popups, setPopups] = useState<ReactNode[]>([])
 
     const nav = useRouter()
 
     const layers = ["stops_case", "stops_rail_case", "stops_hub", "stops_rail_hub"]
+
+    function onMapLoad() {
+        if (!map) return
+        map.off("click", onFeatureClick)
+        map.on("click", onFeatureClick)
+    }
+
 
     function showStopSelectionPopup(feats: MapGeoJSONFeature[], pos: LngLat) {
 
@@ -35,8 +40,9 @@ export default function RoutingMap() {
             [e.point.x - padding, e.point.y - padding],
             [e.point.x + padding, e.point.y + padding]
         ]
-
-        const features = map.current.queryRenderedFeatures(box, {
+        if (!map) return
+        console.log("ksksks")
+        const features = map.queryRenderedFeatures(box, {
             layers: layers
         })
         if (features.length > 1) {
@@ -49,14 +55,14 @@ export default function RoutingMap() {
     //const [tempData, setTempData] = useState()
     const layerStyle = {
         paint: {
-            'circle-radius': 10,
-            'circle-color': '#007cbf'
+            "circle-radius": 5,
+            "circle-color": "blue"
         }
     };
     return (
         <Map
-            ref={map}
-            onRender={onMapReady}
+            onLoad={onMapLoad}
+            id="map"
             initialViewState={{
                 latitude: 60.170833,
                 longitude: 24.9375,
@@ -66,9 +72,8 @@ export default function RoutingMap() {
             mapStyle={hekinavConfig.mapStyle}
         > {popups}
             <Source id="temp-data" type="geojson" data={data || { type: "Feature", geometry: { type: "Point", coordinates: [25, 60] } }}>
-                <Layer source="temp-data" type="circle" id="temp" {...layerStyle}></Layer>
+                <Layer source="temp-data" type="circle" filter={["==",["get","type"],"stop"]} id="temp-stop" {...layerStyle}></Layer>
             </Source>
-
         </Map>
     )
 }
