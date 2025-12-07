@@ -8,6 +8,7 @@ import RouteItem from "@/components/routeitem"
 import { redirect } from "next/navigation"
 import Dropdown, { DropdownItem } from "@/components/dropdown"
 import NavDropdown from "@/components/navdropdown"
+import RouteOnMap from "./mapHandler"
 
 export default async function RouteDeparturesView({
   params,
@@ -40,7 +41,8 @@ export default async function RouteDeparturesView({
 
 
 
-  const { type, longName, shortName, patterns } = (data.route as Route);
+  const route = (data.route as Route),
+    { type, longName, shortName, patterns } = route
 
 
   const color = colors[type]
@@ -66,6 +68,7 @@ export default async function RouteDeparturesView({
 
   return (
     <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 ">
+      <RouteOnMap route={route} pattern={pattern}></RouteOnMap>
       <div className="text-lg flex flex-row gap-2 items-center">
         <div><Label className={`text-white ${color}`} hidden={!shortName}>{shortName}</Label></div>
         <span hidden={!longName} className="text-2xl">{longName}</span>
@@ -91,7 +94,7 @@ export default async function RouteDeparturesView({
                     <div className="flex nowrap text-xs">
                       Next&nbsp;<DepTime short dep={deps[1]}></DepTime>
                     </div>
-                    
+
                   </div>
                 </div>
               </RouteItem>

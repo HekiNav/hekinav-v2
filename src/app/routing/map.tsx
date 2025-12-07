@@ -3,7 +3,8 @@ import { getPageUrlFromStopIdWithoutPrefix, mapContext } from "./layout"
 import Map, { Layer, LngLat, MapGeoJSONFeature, MapMouseEvent, Source, useMap } from "react-map-gl/maplibre";
 import { useConfig } from "@/components/configprovider";
 import MultiSelectPopup from "@/components/multiselectpopup";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { GeoJSONSource } from "maplibre-gl";
 
 export default function RoutingMap() {
     const { data } = useContext(mapContext)
@@ -18,8 +19,16 @@ export default function RoutingMap() {
 
     const layers = ["stops_case", "stops_rail_case", "stops_hub", "stops_rail_hub"]
 
+    const path = usePathname()
+
+
     function onMapLoad() {
         if (!map) return
+        console.log(path)
+        if (path == "/routing") (map.getSource("temp-data") as GeoJSONSource).setData({
+            type: "FeatureCollection",
+            features: []
+        })
         map.off("click", onFeatureClick)
         map.on("click", onFeatureClick)
     }
@@ -52,30 +61,47 @@ export default function RoutingMap() {
 
     }
     //const [tempData, setTempData] = useState()
-    const layerStyle = {
+    const colorInterpolate = [
+        'interpolate', ['linear'], ["get", "color"],
+        0,
+        "#3b82f6",
+        1,
+        "#f97316",
+        2,
+        "#9333ea",
+        3,
+        "#0891b2",
+        4,
+        "#1e40af",
+        5,
+        "#3b82f6",
+        6,
+        "#0d9488",
+        7,
+        "#16a34a",
+        8,
+        "#000",
+    ]
+    const routeStopLayerStyle = {
+        paint: {
+            "circle-radius": 4,
+            "circle-stroke-color": colorInterpolate,
+            "circle-color": "white",
+            "circle-stroke-width": 3,
+            "circle-sort-key":1
+        }
+    };
+    const routePathLayerStyle = {
+        paint: {
+            "line-width": 4,
+            "line-color": colorInterpolate,
+            "line-sort-key":0
+        }
+    };
+    const stopLayerStyle = {
         paint: {
             "circle-radius": 10,
-            "circle-stroke-color": [
-                'interpolate', ['linear'], ["get","color"],
-                0,
-                "#3b82f6",
-                1,
-                "#f97316",
-                2,
-                "#9333ea",
-                3,
-                "#0891b2",
-                4,
-                "#1e40af",
-                5,
-                "#3b82f6",
-                6,
-                "#0d9488",
-                7,
-                "#16a34a",
-                8,
-                "#000",
-            ],
+            "circle-stroke-color": colorInterpolate,
             "circle-color": "white",
             "circle-stroke-width": 8
         }
@@ -94,7 +120,9 @@ export default function RoutingMap() {
             mapStyle={hekinavConfig.mapStyle}
         > {popups}
             <Source id="temp-data" type="geojson" data={data || { type: "Feature", geometry: { type: "Point", coordinates: [25, 60] } }}>
-                <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...layerStyle}></Layer>
+                <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...stopLayerStyle}></Layer>
+                <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "route-stop"]} id="temp-route-stop" {...routeStopLayerStyle}></Layer>
+                <Layer source="temp-data" type="line" filter={["==", ["get", "type"], "route-path"]} id="temp-route-path" {...routePathLayerStyle}></Layer>
             </Source>
         </Map>
     )
