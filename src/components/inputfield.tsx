@@ -18,11 +18,12 @@ export interface InputFieldProps {
     onValueSet: <T = string | Suggestion>(name: string, value: T) => void,
     onlySuggestions?: boolean,
     placeholder?: string,
-    name: string
+    name: string,
+    initialValue?: string
 }
-export default function InputField({ icon, suggestionFunction, onValueSet, name, onlySuggestions = true, placeholder }: InputFieldProps) {
+export default function InputField({ icon, suggestionFunction, onValueSet, name, onlySuggestions = true, placeholder, initialValue = "" }: InputFieldProps) {
     const [focus, setFocus] = useState(false)
-    const [value, setValue] = useState("")
+    const [value, setValue] = useState(initialValue)
     const [suggestions, setSuggestions] = useState(new Array<Suggestion>())
     function onChange(e: ChangeEvent<HTMLInputElement>) {
         setValue(e.target.value)
