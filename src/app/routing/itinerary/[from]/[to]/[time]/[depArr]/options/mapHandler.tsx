@@ -1,10 +1,10 @@
 "use client"
 import maplibregl, { GeoJSONSource } from "maplibre-gl";
 import { useMap } from "react-map-gl/maplibre";
-import { Route, RoutePattern } from "./page";
+import { RoutePattern, Route } from "@/app/routing/route/[id]/[directionId]/page";
 import { decode } from "@googlemaps/polyline-codec";
 
-export default function RouteOnMap({ route, pattern }: { route: Route, pattern: RoutePattern }) {
+export default function RouteOnMap({ route, pattern }: { route: Route, pattern: RoutePattern, depArr: string, time: string }) {
 
     const { map } = useMap()!
     const color = getColor(route.type);

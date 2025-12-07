@@ -1,10 +1,9 @@
-import { Leg } from "@/app/routing/itinerary/[from]/[to]/api/route";
+import { Leg } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route";
 import Icon from "./icon";
 import { faWalking } from "@fortawesome/free-solid-svg-icons";
 
 export default function RouteComposition({legs}: {legs: Leg[]}) {
     const totalDuration = legs.reduce((prev, curr) => prev + curr.duration,0)
-    console.log(totalDuration)
     return (
         <div className="w-full flex flex-row">
             {...legs.map((l, i) => {

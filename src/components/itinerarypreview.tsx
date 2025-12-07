@@ -1,4 +1,4 @@
-import { Itinerary, Leg, LegTime } from "@/app/routing/itinerary/[from]/[to]/api/route";
+import { Itinerary, Leg, LegTime } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route";
 import DepTime from "./deptime";
 import { DepartureRow } from "@/app/routing/[stopType]/[id]/departures/page";
 import Icon from "./icon";
@@ -22,7 +22,9 @@ export default function ItineraryPreview({ itinerary }: ItineraryPreviewProps) {
             <RouteComposition legs={legs}></RouteComposition>
             <div className="flex flex-row justify-between align-center">
                 <div className="flex flex-row" style={{marginTop: "calc(var(--spacing) * 0.5)"}}>
-                    <div hidden={!firstTransitLeg} className="text-sm text-stone-500 flex flex-nowrap">Leaves&nbsp;<DepTime short preposition dep={legTimeToDepRow((firstTransitLeg as Leg).start)} /></div>
+                    <div hidden={!firstTransitLeg} className="text-sm text-stone-500 flex flex-nowrap">
+                        Leaves&nbsp;<DepTime short preposition dep={legTimeToDepRow((firstTransitLeg as Leg).start)} />
+                        &nbsp;from {firstTransitLeg?.from.name}</div>
                     <div hidden={!!firstTransitLeg} className="text-sm text-stone-500">Leave whenever</div>
                 </div>
 

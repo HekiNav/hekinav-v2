@@ -1,24 +1,26 @@
 "use client"
-import { IEndStartPoint, PlannedConnection } from "@/app/routing/itinerary/[from]/[to]/api/route"
-import RoutingSearch from "./routingsearch"
+import { IEndStartPoint, PlannedConnection } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route"
+import RoutingSearch, { utcTime } from "./routingsearch"
 import ItineraryPreview from "./itinerarypreview"
 
 export interface ItinerarySidebarProps {
   data: PlannedConnection,
   from: IEndStartPoint,
-  to: IEndStartPoint
+  to: IEndStartPoint,
+  time: number,
+  depArr: string
 }
 
-export default function ItinerarySidebar({ data, from, to }: ItinerarySidebarProps) {
-  console.log(data)
+export default function ItinerarySidebar({ data, from, to, time, depArr }: ItinerarySidebarProps) {
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-scroll">
-      <RoutingSearch origin={from} destination={to}></RoutingSearch>
+      <RoutingSearch origin={from} destination={to} time={utcTime(time)} depArr={depArr == "dep" ? 0 : 1}></RoutingSearch>
       <h1 className="text-xl mb-1 mt-3">Routes</h1>
       <div className="flex flex-col gap-2">
         {...data.edges.map((e,i) => (
         <ItineraryPreview itinerary={e.node} key={i}></ItineraryPreview>
       ))}
+      <div hidden={data.edges.length != 0}>Could not find routes. Check parameters.</div>
       </div>
       
     </div>

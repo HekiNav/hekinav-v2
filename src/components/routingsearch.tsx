@@ -4,18 +4,33 @@ import InputField, { Suggestion } from './inputfield'
 import { faBicycle, faBusAlt, faLocationDot, faParking, faPlane, faQuestion, faRoad, faSailboat, faStoreAlt, faTrain, faTrainSubway, faTrainTram } from '@fortawesome/free-solid-svg-icons'
 import { useMap } from 'react-map-gl/maplibre'
 import RoutingTimeInput from './routingtimeinput'
-import { IEndStartPoint } from '@/app/routing/itinerary/[from]/[to]/api/route'
+import { IEndStartPoint } from '@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route'
 import { useRouter } from 'next/navigation'
+import moment from 'moment-timezone'
 
 export interface RoutingSearchProps {
     destination?: IEndStartPoint,
-    origin?: IEndStartPoint
+    origin?: IEndStartPoint,
+    time?: number,
+    depArr?: DepArr
+}
+export function helsinkiTime(time?: number | Date) {
+    return moment(time).utc(true).tz("Europe/Helsinki").valueOf()
+}
+export function utcTime(time?: number | Date) {
+    return moment(time).tz("UTC").valueOf()
+}
+export enum DepArr {
+    DEP,
+    ARR
 }
 
 export default function RoutingSearch(props: RoutingSearchProps) {
     const generateSuggestions = getAutocomplete
     const [origin, setOrigin] = useState<IEndStartPoint | null>(props.origin || null)
     const [destination, setDestination] = useState<IEndStartPoint | null>(props.destination || null)
+    const [time, setTime] = useState<number>(props.time || utcTime())
+    const [depArr, setDepArr] = useState<DepArr>(props.depArr || DepArr.DEP)
 
     const { map } = useMap()
     const nav = useRouter()
@@ -60,8 +75,8 @@ export default function RoutingSearch(props: RoutingSearchProps) {
             alert("Please select a valid destination and origin")
             return
         }
-        const url = `/routing/itinerary/${encodeURIComponent(JSON.stringify(origin))}/${encodeURIComponent(JSON.stringify(destination))}/options/`
-
+        const url = `/routing/itinerary/${encodeURIComponent(JSON.stringify(origin))}/${encodeURIComponent(JSON.stringify(destination))}/${time}/${depArr == 0 ? "dep" : "arr"}/options/`
+        console.log(time)
         nav.push(url)
     }
     return (
@@ -69,7 +84,7 @@ export default function RoutingSearch(props: RoutingSearchProps) {
             <InputField placeholder='Origin' initialValue={origin?.label} icon={{ icon: faLocationDot, className: "text-green-500" }} name="origin" onValueSet={(name: string, value: unknown) => onValueSet(name, value as Suggestion)} suggestionFunction={generateSuggestions}></InputField>
             <div className='m-2'></div>
             <InputField placeholder='Destination' initialValue={destination?.label} icon={{ icon: faLocationDot, className: "text-pink-500" }} name="destination" onValueSet={(name: string, value: unknown) => onValueSet(name, value as Suggestion)} suggestionFunction={generateSuggestions}></InputField>
-            <RoutingTimeInput></RoutingTimeInput>
+            <RoutingTimeInput initialTime={time} initialDepArr={depArr} onDepArrSet={setDepArr} onTimeSet={setTime}></RoutingTimeInput>
             <button className='border-2 w-full p-2 hover:border-blue-500 hover:text-blue-500' onClick={search}>Search</button>
         </div>
     )

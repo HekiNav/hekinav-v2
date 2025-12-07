@@ -1,6 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
 import { TypedDocumentNode } from '@apollo/client';
+import moment from 'moment-timezone';
 
 const { DIGITRANSIT_SUBSCRIPTION_KEY = "" } = process.env
 
@@ -18,13 +19,12 @@ export const querys: {
   [key: string]: TypedDocumentNode
 } = {
   first: gql`
-query Itineraries($from: PlanLabeledLocationInput!, $to: PlanLabeledLocationInput!)
-    {
-  planConnection(
-    origin: $from
-    destination: $to
-    first: 10
-  ) {
+query Itineraries(
+  $from: PlanLabeledLocationInput!
+  $to: PlanLabeledLocationInput!
+  $time: PlanDateTimeInput
+) {
+  planConnection(origin: $from, destination: $to, first: 10, dateTime: $time) {
     pageInfo {
       startCursor
       endCursor
@@ -32,10 +32,11 @@ query Itineraries($from: PlanLabeledLocationInput!, $to: PlanLabeledLocationInpu
     edges {
       node {
         duration
-        walkDistance
         start
         end
+        walkDistance
         legs {
+          transitLeg
           from {
             name
           }
@@ -56,10 +57,6 @@ query Itineraries($from: PlanLabeledLocationInput!, $to: PlanLabeledLocationInpu
               time
             }
           }
-          route {
-            type
-            shortName
-          }
           mode
           transitLeg
           legGeometry {
@@ -68,37 +65,44 @@ query Itineraries($from: PlanLabeledLocationInput!, $to: PlanLabeledLocationInpu
           }
           duration
           realtimeState
+          route {
+            type
+            shortName
+          }
         }
       }
     }
   }
 }
+
     `
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ from: string, to: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ from: string, to: string, depArr: string, time: string }> }) {
 
-  const { from, to } = await params
+  const { from, to, depArr, time } = await params
 
   const
     fromJ = JSON.parse(from),
     toJ = JSON.parse(to),
 
-    result = await getItineraryData(fromJ, toJ)
+    result = await getItineraryData(fromJ, toJ, depArr, Number(time))
 
   return Response.json(result)
 }
-export async function getItineraryData(from: IEndStartPoint, to: IEndStartPoint): Promise<{ data: { planConnection: PlannedConnection }, error: never }> {
+export async function getItineraryData(from: IEndStartPoint, to: IEndStartPoint, depArr: string, time: number): Promise<{ data: { planConnection: PlannedConnection }, error: never }> {
 
 
   const query = querys.first
 
+  const timeString = moment(time).tz("UTC").toISOString()
 
   return (await client.query({
     query: query,
     variables: {
       from: from,
-      to: to
+      to: to,
+      time: depArr == "dep" ? {earliestDeparture: timeString} : {latestArrival: timeString}
     }
   }) as { data: { planConnection: PlannedConnection }, error: never })
 }

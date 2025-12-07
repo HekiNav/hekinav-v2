@@ -44,7 +44,6 @@ export function formatDepTime(relativeTime: number, serviceDate: number, include
     // TODO: add timezone handling
     const time = (serviceDate + relativeTime) * 1000
     const diff = time - Date.now()
-    console.log(diff)
     if (diff < 10 * 60 * 1000) {
         return includePrepositions && "in " + Math.floor(diff / (60 * 1000)) + " min"
     }
