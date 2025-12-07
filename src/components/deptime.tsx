@@ -14,6 +14,7 @@ const delayColors = {
 
 
 export default function DepTime({ dep, short = false }: DepTimeProps) {
+    if (!dep) return (<></>)
     return (
         <span className="flex flex-row gap-3">
             <span hidden={short || Math.round(dep.arrivalDelay / 60) == 0}>

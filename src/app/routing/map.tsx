@@ -41,7 +41,6 @@ export default function RoutingMap() {
             [e.point.x + padding, e.point.y + padding]
         ]
         if (!map) return
-        console.log("ksksks")
         const features = map.queryRenderedFeatures(box, {
             layers: layers
         })
@@ -55,13 +54,36 @@ export default function RoutingMap() {
     //const [tempData, setTempData] = useState()
     const layerStyle = {
         paint: {
-            "circle-radius": 5,
-            "circle-color": "blue"
+            "circle-radius": 10,
+            "circle-stroke-color": [
+                'interpolate', ['linear'], ["get","color"],
+                0,
+                "#3b82f6",
+                1,
+                "#f97316",
+                2,
+                "#9333ea",
+                3,
+                "#0891b2",
+                4,
+                "#1e40af",
+                5,
+                "#3b82f6",
+                6,
+                "#0d9488",
+                7,
+                "#16a34a",
+                8,
+                "#000",
+            ],
+            "circle-color": "white",
+            "circle-stroke-width": 8
         }
     };
     return (
         <Map
             onLoad={onMapLoad}
+            onRender={onMapLoad}
             id="map"
             initialViewState={{
                 latitude: 60.170833,
@@ -72,7 +94,7 @@ export default function RoutingMap() {
             mapStyle={hekinavConfig.mapStyle}
         > {popups}
             <Source id="temp-data" type="geojson" data={data || { type: "Feature", geometry: { type: "Point", coordinates: [25, 60] } }}>
-                <Layer source="temp-data" type="circle" filter={["==",["get","type"],"stop"]} id="temp-stop" {...layerStyle}></Layer>
+                <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...layerStyle}></Layer>
             </Source>
         </Map>
     )

@@ -5,11 +5,17 @@ import { useMap } from "react-map-gl/maplibre";
 
 export default function StopOnMap({ stop }: { stop: Stop }) {
 
-    const {map} = useMap()!
+    const { map } = useMap()!
     console.log(stop)
     const color = getColor(stop.routes.map(r => r.type));
 
-    if(!map) return <>MAP NOT FOUND</>
+    if (!map || !map.getSource("temp-data")) return <>MAP NOT FOUND</>
+
+    map.easeTo({
+        essential: true,
+        center: [stop.lon, stop.lat],
+        zoom: 14
+    });
 
     (map.getSource("temp-data") as GeoJSONSource).setData({
         type: "FeatureCollection",
@@ -33,15 +39,15 @@ export default function StopOnMap({ stop }: { stop: Stop }) {
     return (<></>)
 }
 function getColor(types: number[]) {
-    if (types.some(t => t == 701)) return "bg-blue-500"
-    else if (types.some(t => t == 700)) return "bg-blue-500"
-    else if (types.some(t => t == 702)) return "bg-orange-500"
-    else if (types.some(t => t == 1)) return "bg-orange-500"
-    else if (types.some(t => t == 109)) return "bg-purple-600"
-    else if (types.some(t => t == 4)) return "bg-cyan-600"
-    else if (types.some(t => t == 705)) return "bg-blue-800"
-    else if (types.some(t => t == 704)) return "bg-blue-500"
-    else if (types.some(t => t == 0)) return "bg-green-600"
-    else if (types.some(t => t == 900)) return "bg-teal-600"
-    else return "bg-teal-600"
+    if (types.some(t => t == 702)) return 1
+    else if (types.some(t => t == 701)) return 0
+    else if (types.some(t => t == 700)) return 0
+    else if (types.some(t => t == 1)) return 1
+    else if (types.some(t => t == 109)) return 2
+    else if (types.some(t => t == 4)) return 3
+    else if (types.some(t => t == 705)) return 4
+    else if (types.some(t => t == 704)) return 5
+    else if (types.some(t => t == 900)) return 6
+    else if (types.some(t => t == 0)) return 7
+    else return 8
 }
