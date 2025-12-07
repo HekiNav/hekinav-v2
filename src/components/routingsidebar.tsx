@@ -1,12 +1,14 @@
 "use client"
-import {  useState } from 'react'
+import { useState } from 'react'
 import InputField, { Suggestion } from './inputfield'
 import { faBicycle, faBusAlt, faLocationDot, faPlane, faQuestion, faRoad, faSailboat, faStoreAlt, faTrain, faTrainSubway, faTrainTram } from '@fortawesome/free-solid-svg-icons'
 import { useMap } from 'react-map-gl/maplibre'
 import RoutingTimeInput from './routingtimeinput'
+import { IEndStartPoint } from '@/app/routing/itinerary/[from]/[to]/api/route'
+import { useRouter } from 'next/navigation'
 
 export interface RoutingSideBarProps {
-    a?:never
+    a?: never
 }
 
 export default function RoutingSideBar() {
@@ -14,7 +16,8 @@ export default function RoutingSideBar() {
     const [origin, setOrigin] = useState<Suggestion | null>(null)
     const [destination, setDestination] = useState<Suggestion | null>(null)
 
-    const {map} = useMap()
+    const { map } = useMap()
+    const nav = useRouter()
 
     function onValueSet<T = Suggestion>(name: string, value: T) {
         if (name == "origin") {
@@ -36,7 +39,33 @@ export default function RoutingSideBar() {
         })
     }
     function search() {
-        console.log(origin,destination)
+        console.log(origin, destination)
+        if (!origin || !destination) {
+            alert("Please select a valid destination and origin")
+            return
+        }
+        const from: IEndStartPoint = {
+            location: {
+                coordinate: {
+                    latitude: origin.properties.lon,
+                    longitude: origin.properties.lat
+                },
+            },
+            label: origin.text
+        },
+            to: IEndStartPoint = {
+                location: {
+                    coordinate: {
+                        latitude: destination.properties.lon,
+                        longitude: destination.properties.lat
+                    },
+                },
+                label: destination.text
+            },
+            url = `/routing/itinerary/${encodeURIComponent(JSON.stringify(from))}/${encodeURIComponent(JSON.stringify(to))}/api/`
+
+        console.log(url)
+        nav.push(url)
     }
     return (
         <div className="p-4 min-w-80 w-4/10">
@@ -76,11 +105,11 @@ export function getIconTypeForAutocomplete({ layer, ...props }: { [key: string]:
         case "address":
             return { icon: faLocationDot, className: "text-stone-600" }
         case "bikestation":
-            return { icon: faBicycle, className: "text-stone-600"  }
+            return { icon: faBicycle, className: "text-stone-600" }
         case "bikepark":
             return { icon: faBicycle, className: "text-yellow-600" }
         case "venue":
-            return { icon: faStoreAlt, className: "text-stone-600"  }
+            return { icon: faStoreAlt, className: "text-stone-600" }
         case "street":
             return { icon: faRoad, className: "text-stone-600" }
         case "stop":
@@ -97,9 +126,9 @@ export function getIconTypeForAutocomplete({ layer, ...props }: { [key: string]:
                 case "AIRPLANE":
                     return { icon: faPlane, className: "text-blue-800" }
                 case "TRAM":
-                    return { icon: faTrainTram, className: "text-green-600"}
+                    return { icon: faTrainTram, className: "text-green-600" }
                 case "SPEEDTRAM":
-                    return { icon: faTrainTram, className: "text-teal-600"}
+                    return { icon: faTrainTram, className: "text-teal-600" }
                 default:
                     console.warn("No icon for station/stop of type", props.addendum && props.addendum.GTFS.modes[0])
                     return { icon: faLocationDot, className: "text-stone-600" }

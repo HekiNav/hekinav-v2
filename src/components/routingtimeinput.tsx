@@ -12,7 +12,6 @@ export default function RoutingTimeInput({ initialTime = new Date() }: RoutingTi
             times.push({label:`${i}:${j === 0 ? `00` : 15 * j}`, value: i * 3600 + j * 15 * 60});
         }
     }
-    console.log(times)
     return (
         <div className="bg-blue-100 w-full my-2 p-2">
             <Dropdown inline options={[{ value: 0, label: "Departing" }, { value: 1, label: "Arriving" }]}></Dropdown>

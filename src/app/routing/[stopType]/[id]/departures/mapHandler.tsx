@@ -6,7 +6,6 @@ import { useMap } from "react-map-gl/maplibre";
 export default function StopOnMap({ stop }: { stop: Stop }) {
 
     const { map } = useMap()!
-    console.log(stop)
     const color = getColor(stop.routes.map(r => r.type));
 
     if (!map || !map.getSource("temp-data")) return <>MAP NOT FOUND</>

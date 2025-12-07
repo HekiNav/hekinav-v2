@@ -25,7 +25,6 @@ export default function RoutingMap() {
     function onMapLoad(a = true) {
         if (!map) return
         if (path == "/routing") {
-            console.log("jsjsj");
             (map.getSource("temp-data") as GeoJSONSource).setData({
                 type: "FeatureCollection",
                 features: []
@@ -47,7 +46,6 @@ export default function RoutingMap() {
         ])
     }
     function onFeatureClick(e: MapMouseEvent) {
-        console.log("aa")
 
         const padding = 10;
 
@@ -59,7 +57,6 @@ export default function RoutingMap() {
         const features = map.queryRenderedFeatures(box, {
             layers: layers
         })
-        console.log(features)
         if (features.length > 1) {
             showStopSelectionPopup(features, e.lngLat)
         } else if (features.length == 1) {
