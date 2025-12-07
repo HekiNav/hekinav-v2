@@ -6,7 +6,7 @@ import DepTime from "@/components/deptime"
 import Link from "next/link"
 import RouteItem from "@/components/routeitem"
 import { redirect } from "next/navigation"
-import Dropdown, { DropdownItem } from "@/components/dropdown"
+import { DropdownItem } from "@/components/dropdown"
 import NavDropdown from "@/components/navdropdown"
 import RouteOnMap from "./mapHandler"
 

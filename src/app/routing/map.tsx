@@ -8,7 +8,7 @@ import { GeoJSONSource } from "maplibre-gl";
 
 export default function RoutingMap() {
     const { data } = useContext(mapContext)
-    const { map } = useMap()!
+    const { map } = useMap()
 
     const hekinavConfig = useConfig()
 
@@ -22,20 +22,24 @@ export default function RoutingMap() {
     const path = usePathname()
 
 
-    function onMapLoad() {
+    function onMapLoad(a = true) {
         if (!map) return
-        console.log(path)
-        if (path == "/routing") (map.getSource("temp-data") as GeoJSONSource).setData({
-            type: "FeatureCollection",
-            features: []
-        })
-        map.off("click", onFeatureClick)
-        map.on("click", onFeatureClick)
+        if (path == "/routing") {
+            console.log("jsjsj");
+            (map.getSource("temp-data") as GeoJSONSource).setData({
+                type: "FeatureCollection",
+                features: []
+            })
+        }
+        if (a) {
+            map.off("click", onFeatureClick)
+            map.on("click", onFeatureClick)
+        }
+
     }
 
 
     function showStopSelectionPopup(feats: MapGeoJSONFeature[], pos: LngLat) {
-
         setPopups([...popups,
         <MultiSelectPopup key={popups.length} onClick={(feat) => {
             nav.push(getPageUrlFromStopIdWithoutPrefix(feat.properties.stopId, feat.properties.terminalId == feat.properties.stopId && feat.properties.terminalId));
@@ -43,16 +47,19 @@ export default function RoutingMap() {
         ])
     }
     function onFeatureClick(e: MapMouseEvent) {
-        const padding = 5;
+        console.log("aa")
+
+        const padding = 10;
 
         const box: [[number, number], [number, number]] = [
             [e.point.x - padding, e.point.y - padding],
             [e.point.x + padding, e.point.y + padding]
         ]
-        if (!map) return
+        if (!map) return console.warn("no map");
         const features = map.queryRenderedFeatures(box, {
             layers: layers
         })
+        console.log(features)
         if (features.length > 1) {
             showStopSelectionPopup(features, e.lngLat)
         } else if (features.length == 1) {
@@ -61,7 +68,8 @@ export default function RoutingMap() {
 
     }
     //const [tempData, setTempData] = useState()
-    const colorInterpolate = [
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const colorInterpolate: ["interpolate", any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any] = [
         'interpolate', ['linear'], ["get", "color"],
         0,
         "#3b82f6",
@@ -87,29 +95,27 @@ export default function RoutingMap() {
             "circle-radius": 4,
             "circle-stroke-color": colorInterpolate,
             "circle-color": "white",
-            "circle-stroke-width": 3,
-            "circle-sort-key":1
+            "circle-stroke-width": 3
         }
     };
     const routePathLayerStyle = {
         paint: {
             "line-width": 4,
-            "line-color": colorInterpolate,
-            "line-sort-key":0
+            "line-color": colorInterpolate
         }
     };
     const stopLayerStyle = {
         paint: {
             "circle-radius": 10,
             "circle-stroke-color": colorInterpolate,
-            "circle-color": "white",
-            "circle-stroke-width": 8
+            "circle-stroke-width": 8,
+            "circle-color": "white"
         }
     };
     return (
         <Map
-            onLoad={onMapLoad}
-            onRender={onMapLoad}
+            onLoad={() => onMapLoad()}
+            onMouseMove={() => onMapLoad(false)}
             id="map"
             initialViewState={{
                 latitude: 60.170833,
@@ -122,7 +128,7 @@ export default function RoutingMap() {
             <Source id="temp-data" type="geojson" data={data || { type: "Feature", geometry: { type: "Point", coordinates: [25, 60] } }}>
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...stopLayerStyle}></Layer>
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "route-stop"]} id="temp-route-stop" {...routeStopLayerStyle}></Layer>
-                <Layer source="temp-data" type="line" filter={["==", ["get", "type"], "route-path"]} id="temp-route-path" {...routePathLayerStyle}></Layer>
+                <Layer beforeId="temp-route-stop" source="temp-data" type="line" filter={["==", ["get", "type"], "route-path"]} id="temp-route-path" {...routePathLayerStyle}></Layer>
             </Source>
         </Map>
     )

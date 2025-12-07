@@ -1,18 +1,21 @@
 "use client"
-import { RefObject, useState } from 'react'
+import {  useState } from 'react'
 import InputField, { Suggestion } from './inputfield'
 import { faBicycle, faBusAlt, faLocationDot, faPlane, faQuestion, faRoad, faSailboat, faStoreAlt, faTrain, faTrainSubway, faTrainTram } from '@fortawesome/free-solid-svg-icons'
-import { MapRef } from 'react-map-gl/maplibre'
+import { useMap } from 'react-map-gl/maplibre'
 import RoutingTimeInput from './routingtimeinput'
 
 export interface RoutingSideBarProps {
-    map?: RefObject<MapRef>
+    a?:never
 }
 
-export default function RoutingSideBar(props: RoutingSideBarProps) {
+export default function RoutingSideBar() {
     const generateSuggestions = getAutocomplete
     const [origin, setOrigin] = useState<Suggestion | null>(null)
     const [destination, setDestination] = useState<Suggestion | null>(null)
+
+    const {map} = useMap()
+
     function onValueSet<T = Suggestion>(name: string, value: T) {
         if (name == "origin") {
             setOrigin(value as Suggestion)
@@ -21,7 +24,10 @@ export default function RoutingSideBar(props: RoutingSideBarProps) {
         }
         const suggestion = value as Suggestion
         const center: [number, number] = [suggestion.properties?.lat, suggestion.properties?.lon]
-        props.map?.current.flyTo({
+
+        if (!map) return;
+
+        map.flyTo({
             center: center,
             zoom: 14,
             duration: 5000,
@@ -30,7 +36,7 @@ export default function RoutingSideBar(props: RoutingSideBarProps) {
         })
     }
     function search() {
-        
+        console.log(origin,destination)
     }
     return (
         <div className="p-4 min-w-80 w-4/10">
