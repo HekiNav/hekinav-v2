@@ -53,6 +53,7 @@ export default async function RouteDeparturesView({
 
   const stops = pattern.stops
 
+
   const options: DropdownItem[] = patterns.map(p => {
     const first = p.stops[0].name
     const last = p.stops[p.stops.length - 1].name

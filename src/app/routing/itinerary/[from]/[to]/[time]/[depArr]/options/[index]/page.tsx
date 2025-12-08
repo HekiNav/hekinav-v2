@@ -1,34 +1,35 @@
-"use server"
+"use client"
 
-import { getItineraryData } from "../../api/route"
+import { useContext } from "react"
 import ItinerarySidebar from "@/components/itinerarysidebar"
+import { itineraryContext } from "../contextMaker"
+import { redirect, useParams, useRouter } from "next/navigation"
 
-export default async function RouteDeparturesView({
-  params,
-}: {
-  params: Promise<{ from: string, to: string, depArr: string, time: string, index: string }>
-}) {
-  const { from, to, depArr, time, index } = await params
+export default function RouteDeparturesView() {
+  const c = useContext(itineraryContext)
+  const {index}: {index: string} = useParams()
+  const nav = useRouter()
 
-  const
-      fromJ = JSON.parse(decodeURIComponent(from)),
-      toJ = JSON.parse(decodeURIComponent(to))
+  if (!index) {
+    redirect("./")
+  }
 
-  const { data, error } = await getItineraryData(fromJ, toJ, depArr, Number(time))
-
-  const i = Number(index.substring(1, index.length)) 
-
-  if (error || !data) return (
-    <div className="p-4 min-w-80 w-4/10">
-      <h1 className="text-xl text-red-500">500 Internal server error</h1>
-      <div className="text-lg">
-        Failed to get route data
-      </div>
+  if (!c) return (
+    <div>
+      err
     </div>
   )
+  const { from, to, depArr, time, data } = c
+
+  const i = Number(index.substring(1, index.length))
+
+  if (Number.isNaN(i)) {
+    redirect("./")
+  }
+
   return (
     <div>
-        <ItinerarySidebar data={data.planConnection.edges[i].node} from={fromJ} to={toJ} time={Number(time)} depArr={depArr}></ItinerarySidebar>
+      <ItinerarySidebar data={data.edges[i].node} from={from} to={to} time={time} depArr={depArr}></ItinerarySidebar>
     </div>
   )
 }

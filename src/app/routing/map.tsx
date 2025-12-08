@@ -23,7 +23,7 @@ export default function RoutingMap() {
 
 
     function onMapLoad(a = true) {
-        if (!map) return
+        if (!map || !map.getSource("temp-data")) return setTimeout(onMapLoad,1000)
         if (path == "/routing") {
             (map.getSource("temp-data") as GeoJSONSource).setData({
                 type: "FeatureCollection",

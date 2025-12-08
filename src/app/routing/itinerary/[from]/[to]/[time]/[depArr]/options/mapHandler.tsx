@@ -13,7 +13,7 @@ export default function RouteOnMap({ route, pattern }: { route: Route, pattern: 
         if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap,1000)
         const patternShape: [number, number][] = decode(pattern.patternGeometry.points).map(([lat, lon]) => [lon, lat])
 
-        const bounds = patternShape.reduce((bounds, coord) => {
+        /* const bounds = patternShape.reduce((bounds, coord) => {
             return bounds.extend(coord);
         }, new maplibregl.LngLatBounds([patternShape[0], patternShape[0]]));
 
@@ -51,7 +51,7 @@ export default function RouteOnMap({ route, pattern }: { route: Route, pattern: 
                     }
                 ]
 
-            })
+            }) */
     }
     addThingsToMap()
     return (<></>)

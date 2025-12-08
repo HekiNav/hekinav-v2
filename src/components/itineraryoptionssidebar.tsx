@@ -2,6 +2,7 @@
 import { IEndStartPoint, PlannedConnection } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route"
 import RoutingSearch, { utcTime } from "./routingsearch"
 import ItineraryPreview from "./itinerarypreview"
+import Link from "next/link"
 
 export interface ItinerarySidebarProps {
   data: PlannedConnection,
@@ -17,12 +18,14 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
       <RoutingSearch origin={from} destination={to} time={utcTime(time)} depArr={depArr == "dep" ? 0 : 1}></RoutingSearch>
       <h1 className="text-xl mb-1 mt-3">Routes</h1>
       <div className="flex flex-col gap-2">
-        {...data.edges.map((e,i) => (
-        <ItineraryPreview itinerary={e.node} key={i}></ItineraryPreview>
-      ))}
-      <div hidden={data.edges.length != 0}>Could not find routes. Check parameters.</div>
+        {...data.edges.map((e, i) => (
+          <Link href={`./options/i${i}`} key={i}>
+            <ItineraryPreview itinerary={e.node}></ItineraryPreview>
+          </Link>
+        ))}
+        <div hidden={data.edges.length != 0}>Could not find routes. Check parameters.</div>
       </div>
-      
+
     </div>
   )
 }
