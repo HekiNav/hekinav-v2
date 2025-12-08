@@ -1,4 +1,6 @@
 import { DepartureRow } from "@/app/routing/[stopType]/[id]/departures/page";
+import { helsinkiTime } from "./routingsearch";
+import moment from "moment-timezone";
 
 export interface DepTimeProps {
     dep: DepartureRow,
@@ -43,8 +45,8 @@ function getDelayTime(delaySeconds: number) {
 export function formatDepTime(relativeTime: number, serviceDate: number, includePrepositions: boolean) {
     // TODO: add timezone handling
     const time = (serviceDate + relativeTime) * 1000
-    const diff = time - Date.now()
-    if (diff < 10 * 60 * 1000) {
+    const diff = time - moment(moment.utc()).tz("Europe/Helsinki").valueOf()
+    if (Math.abs(diff) < 10 * 60 * 1000) {
         return includePrepositions && "in " + Math.floor(diff / (60 * 1000)) + " min"
     }
     const date = new Date(time)
