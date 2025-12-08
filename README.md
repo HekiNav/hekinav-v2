@@ -4,6 +4,9 @@ This is a full remake of a prevous project, this time with next.js.
 ## Notice
 Currently only supports the time zone of `Europe/Helsinki`
 
+## Demo
+Deployed on Cloudflare Workers at [www.hekinav-test.workers.dev](https://www.hekinav-test.workers.dev)
+
 ## Features
 - Interactive map
 - Itinerary planning
