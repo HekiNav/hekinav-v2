@@ -2,6 +2,8 @@
 import { IEndStartPoint, Itinerary } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route"
 import RoutingSearch, { utcTime } from "./routingsearch"
 import ItineraryPreview from "./itinerarypreview"
+import DotNavigationThingy from "./dotnavigationthingy"
+import { useRouter } from "next/navigation"
 
 export interface ItinerarySidebarProps {
   data: Itinerary,

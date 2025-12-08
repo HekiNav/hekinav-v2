@@ -4,6 +4,7 @@ import { useContext } from "react"
 import ItinerarySidebar from "@/components/itinerarysidebar"
 import { itineraryContext } from "../contextMaker"
 import { redirect, useParams, useRouter } from "next/navigation"
+import DotNavigationThingy from "@/components/dotnavigationthingy"
 
 export default function RouteDeparturesView() {
   const c = useContext(itineraryContext)
@@ -29,6 +30,7 @@ export default function RouteDeparturesView() {
 
   return (
     <div>
+      <DotNavigationThingy amount={data.edges.length} selected={i} onSet={(i) => nav.push(`./i${i}`)}></DotNavigationThingy>
       <ItinerarySidebar data={data.edges[i].node} from={from} to={to} time={time} depArr={depArr}></ItinerarySidebar>
     </div>
   )
