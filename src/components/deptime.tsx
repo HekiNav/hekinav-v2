@@ -17,6 +17,7 @@ const delayColors = {
 
 
 export default function DepTime({ dep, short = false, preposition = false }: DepTimeProps) {
+
     if (!dep) return (<></>)
     return (
         <span className="flex flex-row gap-3">
@@ -47,8 +48,8 @@ export function formatDepTime(relativeTime: number, serviceDate: number, include
     const time = (serviceDate + relativeTime) * 1000
     const diff = time - moment(moment.utc()).tz("Europe/Helsinki").valueOf()
     if (Math.abs(diff) < 10 * 60 * 1000) {
-        return includePrepositions && "in " + Math.floor(diff / (60 * 1000)) + " min"
+        return (includePrepositions ? "in " : "") + Math.floor(diff / (60 * 1000)) + " min"
     }
     const date = new Date(time)
-    return includePrepositions && "at " +`${date.getHours()}:${date.getMinutes().toString().padStart(2,"0")}`
+    return (includePrepositions ? "at " : "") +`${date.getHours()}:${date.getMinutes().toString().padStart(2,"0")}`
 }
