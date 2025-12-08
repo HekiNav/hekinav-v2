@@ -1,4 +1,4 @@
-import { faCaretLeft, faCaretRight, faCircle } from "@fortawesome/free-solid-svg-icons"
+import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons"
 import Icon from "./icon"
 import { ReactNode } from "react"
 
@@ -15,7 +15,7 @@ export default function DotNavigationThingy({ onSet, amount, selected }: DotNavi
     for (let i = 0; i < amount; i++) {
         circles.push(
             <div onClick={() => onClick(i)} className={`${i == selected ? "bg-stone-600 w-3 h-3" : ""} rounded-full w-2 h-2 bg-stone-400`}>
-
+                
             </div>
         )
     }

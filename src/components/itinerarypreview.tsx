@@ -66,7 +66,7 @@ export function formatDuration(duration: number) {
     return str + `${Math.floor(duration % 3600 / 60)}min`
 }
 
-function parseISO8601DurationBadly(iso8601Duration: string) {
+export function parseISO8601DurationBadly(iso8601Duration: string) {
     const iso8601DurationRegex = /(-)?P(?:([.,\d]+)Y)?(?:([.,\d]+)M)?(?:([.,\d]+)W)?(?:([.,\d]+)D)?T(?:([.,\d]+)H)?(?:([.,\d]+)M)?(?:([.,\d]+)S)?/;
 
     const matches = iso8601Duration.match(iso8601DurationRegex)!

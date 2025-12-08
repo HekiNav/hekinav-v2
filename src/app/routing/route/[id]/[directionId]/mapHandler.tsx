@@ -9,8 +9,6 @@ export default function RouteOnMap({ route, pattern }: { route: Route, pattern: 
     const { map } = useMap()!
     const color = getColor(route.type);
 
-    if (!map || !map.getSource("temp-data")) return <>MAP NOT FOUND</>
-
     const patternShape: [number, number][] = decode(pattern.patternGeometry.points).map(([lat, lon]) => [lon, lat])
 
     const bounds = patternShape.reduce((bounds, coord) => {

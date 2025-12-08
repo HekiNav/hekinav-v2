@@ -28,7 +28,7 @@ export default async function StopDeparturesView({
     { stoptimesWithoutPatterns, name, desc, platformCode, code } = stop
 
   return (
-    <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 h-full">
+    <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 h-full pb-10">
       <StopOnMap stop={stop}></StopOnMap>
       <div className="text-lg flex flex-row gap-2 items-center -mb-3">
         <span className="text-2xl">{name}</span>

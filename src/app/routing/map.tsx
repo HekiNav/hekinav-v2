@@ -111,8 +111,6 @@ export default function RoutingMap() {
     };
     return (
         <Map
-            onLoad={() => onMapLoad()}
-            onMouseMove={() => onMapLoad(false)}
             id="map"
             initialViewState={{
                 latitude: 60.170833,
@@ -121,6 +119,8 @@ export default function RoutingMap() {
             }}
             style={{ width: "100%", height: "100%" }}
             mapStyle={hekinavConfig.mapStyle}
+            onLoad={() => onMapLoad()}
+            onMouseMove={() => onMapLoad(false)}
         > {popups}
             <Source id="temp-data" type="geojson" data={data || { type: "Feature", geometry: { type: "Point", coordinates: [25, 60] } }}>
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...stopLayerStyle}></Layer>

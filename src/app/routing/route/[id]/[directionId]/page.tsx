@@ -68,7 +68,7 @@ export default async function RouteDeparturesView({
 
 
   return (
-    <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 ">
+    <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 h-full pb-10">
       <RouteOnMap route={route} pattern={pattern}></RouteOnMap>
       <div className="text-lg flex flex-row gap-2 items-center">
         <div><Label className={`text-white ${color}`} hidden={!shortName}>{shortName}</Label></div>
@@ -83,7 +83,7 @@ export default async function RouteDeparturesView({
           const deps = depData.data?.route.patterns.find((p: RoutePattern) => p.code == pattern.code)?.stops.find((s: RouteStop) => s.gtfsId == stop.gtfsId).stopTimesForPattern
           return (
             <Link href={`/routing/stop/${stop.gtfsId}/departures`} key={i} className="flex flex-row justify-between gap-5">
-              <RouteItem color1={i == 0 ? undefined : color} color2={i == stops.length - 1 ? undefined : color} borderColor={borderColor}>
+              <RouteItem color1={i == 0 ? undefined : borderColor} color2={i == stops.length - 1 ? undefined : borderColor} borderColor={borderColor}>
                 <div className="flex flex-row w-full justify-between">
                   <div>
                     <div className="-mb-2">{stop.name}</div>
