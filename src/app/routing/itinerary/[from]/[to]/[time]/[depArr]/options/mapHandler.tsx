@@ -9,51 +9,51 @@ export default function RouteOnMap({ route, pattern }: { route: Route, pattern: 
     const { map } = useMap()!
     const color = getColor(route.type);
 
-    if (!map || !map.getSource("temp-data")) return <>MAP NOT FOUND</>
+    function addThingsToMap() {
+        if (!map) return setTimeout(addThingsToMap,1000)
+        const patternShape: [number, number][] = decode(pattern.patternGeometry.points).map(([lat, lon]) => [lon, lat])
 
-    const patternShape: [number, number][] = decode(pattern.patternGeometry.points).map(([lat, lon]) => [lon, lat])
+        const bounds = patternShape.reduce((bounds, coord) => {
+            return bounds.extend(coord);
+        }, new maplibregl.LngLatBounds([patternShape[0], patternShape[0]]));
 
-    const bounds = patternShape.reduce((bounds, coord) => {
-        return bounds.extend(coord);
-    }, new maplibregl.LngLatBounds([patternShape[0], patternShape[0]]));
+        map.fitBounds(bounds, {
+            essential: true,
+            padding: 100
+        })
 
-    map.fitBounds(bounds,{
-        essential: true,
-        padding: 100
-    })
+            ; (map.getSource("temp-data") as GeoJSONSource).setData({
+                type: "FeatureCollection",
+                features: [
+                    {
+                        type: "Feature",
+                        properties: {
+                            type: "route-stop",
+                            color: color
+                        },
+                        geometry: {
+                            type: "MultiPoint",
+                            coordinates: [
+                                ...pattern.stops.map(s => [s.lon, s.lat])
+                            ]
+                        }
+                    },
+                    {
+                        type: "Feature",
+                        properties: {
+                            type: "route-path",
+                            color: color
+                        },
+                        geometry: {
+                            type: "LineString",
+                            coordinates: patternShape
+                        }
+                    }
+                ]
 
-    ; (map.getSource("temp-data") as GeoJSONSource).setData({
-        type: "FeatureCollection",
-        features: [
-            {
-                type: "Feature",
-                properties: {
-                    type: "route-stop",
-                    color: color
-                },
-                geometry: {
-                    type: "MultiPoint",
-                    coordinates: [
-                        ...pattern.stops.map(s => [s.lon, s.lat])
-                    ]
-                }
-            },
-            {
-                type: "Feature",
-                properties: {
-                    type: "route-path",
-                    color: color
-                },
-                geometry: {
-                    type: "LineString",
-                    coordinates: patternShape
-                }
-            }
-        ]
-    })
-
-
-
+            })
+    }
+    addThingsToMap()
     return (<></>)
 }
 function getColor(type: number) {

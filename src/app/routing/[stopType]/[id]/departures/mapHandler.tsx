@@ -8,32 +8,32 @@ export default function StopOnMap({ stop }: { stop: Stop }) {
     const { map } = useMap()!
     const color = getColor(stop.routes.map(r => r.type));
 
-    if (!map || !map.getSource("temp-data")) return <>MAP NOT FOUND</>
+    function addThingsToMap() {
+        if (!map) return setTimeout(addThingsToMap, 1000)
+        map.easeTo({
+            essential: true,
+            center: [stop.lon, stop.lat],
+            zoom: 14
+        });
 
-    map.easeTo({
-        essential: true,
-        center: [stop.lon, stop.lat],
-        zoom: 14
-    });
-
-    (map.getSource("temp-data") as GeoJSONSource).setData({
-        type: "FeatureCollection",
-        features: [
-            {
-                type: "Feature",
-                properties: {
-                    type: "stop",
-                    color: color
-                },
-                geometry: {
-                    type: "Point",
-                    coordinates: [stop.lon, stop.lat]
+        (map.getSource("temp-data") as GeoJSONSource).setData({
+            type: "FeatureCollection",
+            features: [
+                {
+                    type: "Feature",
+                    properties: {
+                        type: "stop",
+                        color: color
+                    },
+                    geometry: {
+                        type: "Point",
+                        coordinates: [stop.lon, stop.lat]
+                    }
                 }
-            }
-        ]
-    })
-
-
+            ]
+        })
+    }
+    addThingsToMap()
 
     return (<></>)
 }

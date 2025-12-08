@@ -14,7 +14,7 @@ export interface ItinerarySidebarProps {
 export default function ItinerarySidebar({ data, from, to, time, depArr }: ItinerarySidebarProps) {
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-scroll">
-      aaa
+      
     </div>
   )
 }

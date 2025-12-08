@@ -1,5 +1,4 @@
 import { DepartureRow } from "@/app/routing/[stopType]/[id]/departures/page";
-import { helsinkiTime } from "./routingsearch";
 import moment from "moment-timezone";
 
 export interface DepTimeProps {
