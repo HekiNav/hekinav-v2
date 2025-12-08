@@ -10,7 +10,7 @@ export default function RouteOnMap({ route, pattern }: { route: Route, pattern: 
     const color = getColor(route.type);
 
     function addThingsToMap() {
-        if (!map) return setTimeout(addThingsToMap,1000)
+        if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap,1000)
         const patternShape: [number, number][] = decode(pattern.patternGeometry.points).map(([lat, lon]) => [lon, lat])
 
         const bounds = patternShape.reduce((bounds, coord) => {

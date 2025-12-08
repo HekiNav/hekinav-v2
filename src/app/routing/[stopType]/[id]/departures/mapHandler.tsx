@@ -9,7 +9,7 @@ export default function StopOnMap({ stop }: { stop: Stop }) {
     const color = getColor(stop.routes.map(r => r.type));
 
     function addThingsToMap() {
-        if (!map) return setTimeout(addThingsToMap, 1000)
+        if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap, 1000)
         map.easeTo({
             essential: true,
             center: [stop.lon, stop.lat],
