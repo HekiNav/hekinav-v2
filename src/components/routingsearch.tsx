@@ -6,6 +6,7 @@ import { useMap } from 'react-map-gl/maplibre'
 import RoutingTimeInput from './routingtimeinput'
 import { IEndStartPoint } from '@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route'
 import { useRouter } from 'next/navigation'
+import { GeoJSONSource, LngLatBounds } from 'maplibre-gl'
 
 export interface RoutingSearchProps {
     destination?: IEndStartPoint,
@@ -83,16 +84,60 @@ export default function RoutingSearch(props: RoutingSearchProps) {
         }
         const suggestion = value as Suggestion
         const center: [number, number] = [suggestion.properties?.lat, suggestion.properties?.lon]
+        const originCenter: [number, number] | null = name == "origin" ? center : (origin ? [origin?.location?.coordinate.longitude || 0, origin?.location?.coordinate.latitude || 0] : null)
+        const destinationCenter: [number, number] | null = name == "destination" ? center : (destination ? [destination?.location?.coordinate.longitude || 0, destination?.location?.coordinate.latitude || 0] : null)
 
-        if (!map) return;
+        if (!map || !map.getSource("temp-data")) return;
 
-        map.flyTo({
-            center: center,
-            zoom: 14,
+        interface fooba {
+            type: "Feature",
+            properties: {[key:string]:string},
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            geometry: any
+        }
+        const feats = new Array<fooba>()
+
+        if (originCenter) feats.push({
+            type: "Feature",
+            properties: {
+                type: "origin-marker"
+            },
+            geometry: {
+                type: "Point",
+                coordinates: originCenter
+            }
+        });
+
+        if (destinationCenter) feats.push({
+            type: "Feature",
+            properties: {
+                type: "destination-marker"
+            },
+            geometry: {
+                type: "Point",
+                coordinates: destinationCenter
+            }
+        })
+
+        console.log(feats)
+
+        let bounds = new LngLatBounds(center, center)
+
+        if (originCenter) bounds = bounds.extend(originCenter)
+        if (destinationCenter) bounds = bounds.extend(destinationCenter)
+
+        map.fitBounds(bounds,{
+            padding: 100,
             duration: 5000,
             animate: true,
             essential: true
         })
+
+            ; (map.getSource("temp-data") as GeoJSONSource).setData({
+                type: "FeatureCollection",
+                features: feats
+            })
+
     }
     function search() {
         if (!origin || !destination) {

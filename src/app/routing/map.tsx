@@ -19,20 +19,26 @@ export default function RoutingMap() {
 
     const layers = ["stops_case", "stops_rail_case", "stops_hub", "stops_rail_hub"]
 
-    const path = usePathname()
-
-
     function onMapLoad(a = true) {
-        if (!map || !map.getSource("temp-data")) return setTimeout(onMapLoad,1000)
-        if (path == "/routing") {
-            (map.getSource("temp-data") as GeoJSONSource).setData({
-                type: "FeatureCollection",
-                features: []
-            })
-        }
+        if (!map || !map.getSource("temp-data")) return setTimeout(onMapLoad, 1000)
+
         if (a) {
             map.off("click", onFeatureClick)
             map.on("click", onFeatureClick)
+        }
+        if (!map.getImage("map-pin-red")) {
+            const imageRed = document.createElement("img")
+            imageRed.src = "/map-pin-red.svg"
+            imageRed.addEventListener("load", () => {
+                if (!map.getImage("map-pin")) map.addImage("map-pin-red", imageRed)
+            })
+        }
+        if (!map.getImage("map-pin-green")) {
+            const imageGreen = document.createElement("img")
+            imageGreen.src = "/map-pin-green.svg"
+            imageGreen.addEventListener("load", () => {
+                if (!map.getImage("map-pin")) map.addImage("map-pin-green", imageGreen)
+            })
         }
 
     }
@@ -109,6 +115,20 @@ export default function RoutingMap() {
             "circle-color": "white"
         }
     };
+    const originMarkerStyle = {
+        layout: {
+            'icon-image': 'map-pin-green',
+            'icon-size': 0.1,
+            "icon-anchor": ("bottom" as never)
+        }
+    };
+    const destinationMarkerStyle = {
+        layout: {
+            'icon-image': 'map-pin-red',
+            'icon-size': 0.1,
+            "icon-anchor": ("bottom" as never)
+        }
+    };
     return (
         <Map
             id="map"
@@ -126,6 +146,8 @@ export default function RoutingMap() {
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...stopLayerStyle}></Layer>
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "route-stop"]} id="temp-route-stop" {...routeStopLayerStyle}></Layer>
                 <Layer beforeId="temp-route-stop" source="temp-data" type="line" filter={["==", ["get", "type"], "route-path"]} id="temp-route-path" {...routePathLayerStyle}></Layer>
+                <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "destination-marker"]} id="temp-destination" {...destinationMarkerStyle}></Layer>
+                <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "origin-marker"]} id="temp-origin" {...originMarkerStyle}></Layer>
             </Source>
         </Map>
     )
