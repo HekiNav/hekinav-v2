@@ -34,13 +34,30 @@ query Itineraries(
         start
         end
         walkDistance
+        waitingTime
+        walkTime
         legs {
+          distance
           transitLeg
           from {
             name
+            stop {
+              name
+              platformCode,
+              code,
+              gtfsId,
+              desc
+            }
           }
           to {
             name
+            stop {
+              name
+              platformCode,
+              code,
+              gtfsId,
+              desc
+            }
           }
           start {
             scheduledTime
@@ -57,7 +74,7 @@ query Itineraries(
             }
           }
           mode
-          transitLeg
+          
           legGeometry {
             points
             length
@@ -67,13 +84,15 @@ query Itineraries(
           route {
             type
             shortName
+            gtfsId
+            longName
           }
+          headsign
         }
       }
     }
   }
 }
-
     `
 }
 
@@ -101,7 +120,7 @@ export async function getItineraryData(from: IEndStartPoint, to: IEndStartPoint,
     variables: {
       from: from,
       to: to,
-      time: depArr == "dep" ? {earliestDeparture: timeString} : {latestArrival: timeString}
+      time: depArr == "dep" ? { earliestDeparture: timeString } : { latestArrival: timeString }
     }
   }) as { data: { planConnection: PlannedConnection }, error: never })
 }
@@ -126,6 +145,8 @@ export interface Itinerary {
   end: string,
   duration: number,
   walkDistance: number,
+  walkTime: number,
+  waitingTime: number,
   legs: Leg[]
 }
 export interface Leg {
@@ -140,12 +161,16 @@ export interface Leg {
     length: number
   }
   duration: number,
-  realtimeState: string
-  route: LegRoute
+  distance: number,
+  realtimeState: string,
+  route?: LegRoute,
+  headsign?: string
 }
 export interface LegRoute {
   type: number,
-  shortName: string
+  shortName: string,
+  gtfsId: string,
+  longName: string
 }
 export interface LegTime {
   scheduledTime: string
@@ -156,4 +181,12 @@ export interface LegTime {
 }
 export interface IPlace {
   name: string
+  stop?: IStop
+}
+export interface IStop {
+  name: string
+  platformCode?: string
+  code?: string,
+  gtfsId: string,
+  desc: string
 }

@@ -15,8 +15,8 @@ export default function RouteItem({ color1 = "", color2 = "", icon, borderColor,
                     <span hidden={!icon}>{icon}</span>
                 </span>
                 <div className={`flex flex-col h-full grow w-0 pr-2 z-1`}>
-                    <div className={`${color1 || "border-transparent"} h-full w-0 border-4`}></div>
-                    <div className={`${color2 || "border-transparent"} h-full w-0 border-4`}></div>
+                    <div className={`${color1 || "border-transparent"} h-full w-0 border-l-8`}></div>
+                    <div className={`${color2 || "border-transparent"} h-full w-0 border-l-8`}></div>
                 </div>
             </div>
 
