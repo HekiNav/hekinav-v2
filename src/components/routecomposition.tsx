@@ -7,7 +7,7 @@ export default function RouteComposition({legs}: {legs: Leg[]}) {
     return (
         <div className="w-full flex flex-row">
             {...legs.map((l, i) => {
-                const color = l.transitLeg ? colors[l.route.type] : "bg-stone-600"
+                const color = l.transitLeg ? colors[l.route?.type || 0] : "bg-stone-600"
                 const percent = (l.duration / totalDuration)
                 const text = getText(l)
                 return (
@@ -18,7 +18,7 @@ export default function RouteComposition({legs}: {legs: Leg[]}) {
     )
 }
 function getText(leg: Leg) {
-    if (leg.transitLeg) return <>{leg.route.shortName}</>
+    if (leg.transitLeg) return <>{leg.route?.shortName}</>
     if (leg.mode == "WALK") return <Icon small icon={faWalking}></Icon>
     return <></>
 }
