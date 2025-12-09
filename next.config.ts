@@ -1,7 +1,8 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default nextConfig;
+/** @type {import('next').NextConfig} */
+const nextConfig = {}
+ 
+import withBundleAnalyzer from '@next/bundle-analyzer'
+ 
+module.exports = {...nextConfig, ...withBundleAnalyzer({
+  enabled: true,
+})}

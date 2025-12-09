@@ -6,7 +6,6 @@ import { useMap } from 'react-map-gl/maplibre'
 import RoutingTimeInput from './routingtimeinput'
 import { IEndStartPoint } from '@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route'
 import { useRouter } from 'next/navigation'
-import moment from 'moment-timezone'
 
 export interface RoutingSearchProps {
     destination?: IEndStartPoint,
@@ -14,11 +13,36 @@ export interface RoutingSearchProps {
     time?: number,
     depArr?: DepArr
 }
+export function shiftToTimeZone(date: Date | number, timeZone: string) {
+    const dtf = new Intl.DateTimeFormat("en-US", {
+        timeZone,
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
+
+    const parts = dtf.formatToParts(date);
+    const vals = Object.fromEntries(parts.map(p => [p.type, p.value]));
+
+    const shifted = new Date(
+        `${vals.year}-${vals.month}-${vals.day}T${vals.hour}:${vals.minute}:${vals.second}.000Z`
+    );
+
+    return shifted.getTime();
+}
 export function helsinkiTime(time?: number | Date) {
-    return moment(time).utc(true).tz("Europe/Helsinki").valueOf()
+    const asUTC = new Date(time || Date.now());
+
+    const helsinkiTs = shiftToTimeZone(asUTC, "Europe/Helsinki");
+
+    return helsinkiTs;
 }
 export function utcTime(time?: number | Date) {
-    return moment(time).tz("UTC").valueOf()
+    return new Date(time || Date.now()).getTime();
 }
 export enum DepArr {
     DEP,

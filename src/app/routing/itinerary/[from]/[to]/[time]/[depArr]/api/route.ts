@@ -1,7 +1,6 @@
 import { type NextRequest } from 'next/server'
 import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
 import { TypedDocumentNode } from '@apollo/client';
-import moment from 'moment-timezone';
 
 const { DIGITRANSIT_SUBSCRIPTION_KEY = "" } = process.env
 
@@ -95,7 +94,7 @@ export async function getItineraryData(from: IEndStartPoint, to: IEndStartPoint,
 
   const query = querys.first
 
-  const timeString = moment(time).tz("UTC").toISOString()
+  const timeString = new Date(time).toISOString();
 
   return (await client.query({
     query: query,

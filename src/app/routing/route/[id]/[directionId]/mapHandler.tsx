@@ -1,5 +1,5 @@
 "use client"
-import maplibregl, { GeoJSONSource } from "maplibre-gl";
+import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
 import { useMap } from "react-map-gl/maplibre";
 import { Route, RoutePattern } from "./page";
 import { decode } from "@googlemaps/polyline-codec";
@@ -13,7 +13,7 @@ export default function RouteOnMap({ route, pattern }: { route: Route, pattern: 
 
     const bounds = patternShape.reduce((bounds, coord) => {
         return bounds.extend(coord);
-    }, new maplibregl.LngLatBounds([patternShape[0], patternShape[0]]));
+    }, new LngLatBounds([patternShape[0], patternShape[0]]));
 
     function addThingsToMap() {
         if (!map) return setTimeout(addThingsToMap, 1000)

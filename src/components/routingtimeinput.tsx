@@ -1,8 +1,7 @@
 "use client"
 
-import moment from "moment-timezone";
 import Dropdown, { DropdownItem } from "./dropdown"
-import { helsinkiTime, utcTime } from "./routingsearch";
+import { helsinkiTime, shiftToTimeZone, utcTime } from "./routingsearch";
 
 export interface RoutingTimeInputProps {
     initialTime?: number,
@@ -14,13 +13,14 @@ export default function RoutingTimeInput({ initialDepArr = 0, initialTime = utcT
     const times = new Array<DropdownItem>();
     for (let i = 0; i < 24; i++) {
         for (let j = 0; j < 4; j++) {
-            times.push({ label: `${i}:${j === 0 ? `00` : 15 * j}`, value: i * 3600 + j * 15 * 60 });
+            times.push({ label: `${i}:${j === 0 ? `00` : 15 * j}`, value: (i-2) * 3600 + j * 15 * 60 });
         }
     }
-    const timeOffset = moment(Math.floor(initialTime / (24 * 3600 * 1000)) * 24 * 3600 * 1000).tz("Europe/Helsinki", true).utc(false).tz("Europe/Helsinki", true).utc(false).valueOf()
-    const dayTime = helsinkiTime(Math.round((initialTime) % (24 * 3600 * 1000) / (15 * 60 * 1000)) * 15 * 60 * 1000)
+    const dayStartUTC = (Math.floor(initialTime / 86400000) * 86400000)
 
-    console.log(moment(timeOffset).tz("Europe/Helsinki", true).utc(false).format(), moment(timeOffset).format())
+    const timeOffset = utcTime(new Date(dayStartUTC))
+
+    const dayTime = Math.round((initialTime) % (24 * 3600 * 1000) / (15 * 60 * 1000)) * 15 * 60 * 1000
 
     return (
         <div className="bg-blue-100 w-full my-2 p-2">
