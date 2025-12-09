@@ -100,7 +100,6 @@ export default function RoutingSearch(props: RoutingSearchProps) {
             return
         }
         const url = `/routing/itinerary/${encodeURIComponent(JSON.stringify(origin))}/${encodeURIComponent(JSON.stringify(destination))}/${time}/${depArr == 0 ? "dep" : "arr"}/options/`
-        console.log(time)
         nav.push(url)
     }
     return (
