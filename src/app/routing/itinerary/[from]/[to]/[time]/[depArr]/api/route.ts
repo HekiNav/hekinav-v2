@@ -87,6 +87,9 @@ query Itineraries(
             gtfsId
             longName
           }
+          trip {
+            directionId
+          }
           headsign
         }
       }
@@ -164,7 +167,10 @@ export interface Leg {
   distance: number,
   realtimeState: string,
   route?: LegRoute,
-  headsign?: string
+  headsign?: string,
+  trip: {
+    directionId: string
+  }
 }
 export interface LegRoute {
   type: number,

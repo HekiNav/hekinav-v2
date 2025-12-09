@@ -22,7 +22,7 @@ export default function RoutingLayout({
             <div className="h-full max-h-screen flex flex-row">
                 <mapContext.Provider value={{ data: { type: "FeatureCollection", features: [] } }}>
                     <div className="flex flex-col">
-                        <div className="w-full flex flex-row" onClick={nav.back}>
+                        <div className="w-full flex flex-row cursor-pointer" onClick={nav.back}>
                             <Icon icon={faCaretLeft}></Icon> Back
                         </div>
                         {children}

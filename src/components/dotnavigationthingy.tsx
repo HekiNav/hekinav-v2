@@ -14,14 +14,14 @@ export default function DotNavigationThingy({ onSet, amount, selected }: DotNavi
     const circles: ReactNode[] = []
     for (let i = 0; i < amount; i++) {
         circles.push(
-            <div onClick={() => onClick(i)} className={`${i == selected ? "bg-stone-600 w-3 h-3" : ""} rounded-full w-2 h-2 bg-stone-400`}>
+            <div onClick={() => onClick(i)} className={`${i == selected ? "bg-stone-600 w-3 h-3" : "cursor-pointer"} rounded-full w-2 h-2 bg-stone-400`}>
                 
             </div>
         )
     }
     return <div className="flex flex-row w-full items-center justify-center">
-        <Icon onClick={() => onClick(selected - 1)} className="py-1 pl-1" icon={faCaretLeft}></Icon>
+        <Icon onClick={() => onClick(selected - 1)} className={`py-1 pl-1 ${selected == 0 ? "text-stone-500" : "text-stone-800 cursor-pointer"}`} icon={faCaretLeft}></Icon>
         <div className="flex flex-row flex-nowrap gap-1 overflow-scroll items-center justify-center">{...circles}</div>
-        <Icon onClick={() => onClick(selected + 1)} className="py-1 pr-1" icon={faCaretRight}></Icon>
+        <Icon onClick={() => onClick(selected + 1)} className={`py-1 pl-1 ${selected == amount -1 ? "text-stone-500" : "text-stone-800 cursor-pointer"}`} icon={faCaretRight}></Icon>
     </div>
 }

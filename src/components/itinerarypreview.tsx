@@ -56,7 +56,7 @@ export function legTimeToDepRow(time: LegTime): DepartureRow {
     }
 }
 
-export function formatTime(time: string) {
+export function formatTime(time: string | number) {
     const date = new Date(time)
     return `${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`
 }

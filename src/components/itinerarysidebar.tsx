@@ -1,11 +1,12 @@
 "use client"
-import { IEndStartPoint, Itinerary } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route"
+import { IEndStartPoint, Itinerary, LegTime } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route"
 import { formatDuration, formatTime } from "./itinerarypreview"
 import { faClockFour, faLocationDot, faWalking } from "@fortawesome/free-solid-svg-icons"
 import IconItem from "./iconitem"
 import RouteItem from "./routeitem"
 import Icon from "./icon"
 import Label from "./label"
+import Link from "next/link"
 
 export interface ItinerarySidebarProps {
   data: Itinerary,
@@ -17,6 +18,13 @@ export interface ItinerarySidebarProps {
 
 export default function ItinerarySidebar({ data, from, to, time, depArr }: ItinerarySidebarProps) {
   console.log(data)
+  function formatLegTime(time: LegTime) {
+    if (time.estimated) {
+      return <span className="text-lime-500">{formatTime(time.estimated.time)}</span>
+    }
+    return <span>~{formatTime(time.scheduledTime)}</span>
+  }
+
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-scroll h-screen pb-40">
       <h1 className="text-2xl">Itinerary</h1>
@@ -55,17 +63,25 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
 
           const stop = l.to.stop
 
+          const isSameStopTransfer = l.transitLeg && nl.transitLeg
+
           const stopContents = (
             <div className=" flex flex-row w-full my-1">
               {stop ? (
-                <div>
-                  <div className="text-lg flex flex-row gap-2 items-center -mb-2">
-                    <span className="text-lg">{stop.name}</span>
-                    <div><Label className="text-sm bg-stone-300" hidden={!stop.platformCode}>pl. {stop.platformCode}</Label></div>
-                  </div>
-                  <div className="text-md flex flex-row gap-2 items-center">
-                    <div><Label hidden={!stop.code} className="bg-stone-300 text-sm">{stop.code} </Label></div>
-                    <div hidden={!stop.desc} className=" text-stone-600">{stop.desc}</div>
+                <div className="flex flex-row justify-between w-full">
+                  <Link href={`/routing/stop/${stop.gtfsId}/departures`}>
+                    <div className="text-lg flex flex-row gap-2 items-center -mb-2">
+                      <span className="text-lg truncate">{stop.name}</span>
+                      <div><Label className="text-sm bg-stone-300" hidden={!stop.platformCode}>pl. {stop.platformCode}</Label></div>
+                    </div>
+                    <div className="text-md flex flex-row gap-2 items-center">
+                      <div><Label hidden={!stop.code} className="bg-stone-300 text-sm">{stop.code} </Label></div>
+                      <div hidden={!stop.desc} className=" text-stone-600">{stop.desc}</div>
+                    </div>
+                  </Link>
+                  <div className="flex h-full flex-col align-center">
+                    <span>{formatLegTime(l.transitLeg ? l.end : nl.start)}</span>
+                    <span className="-mt-2" hidden={!isSameStopTransfer}>{formatLegTime(nl.start)}</span>
                   </div>
                 </div>
               ) : (
@@ -77,10 +93,10 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
           )
           const routeContents = (
             <div className=" flex flex-row w-full my-0">
-              <div className="text-lg flex flex-row gap-2 items-center">
+              <Link href={`/routing/route/${nl.route?.gtfsId}/${nl.trip?.directionId}/`} className="text-lg flex flex-row gap-2 items-center">
                 <div><Label className={`text-white ${nextColor}`}>{nl.route?.shortName || nl.route?.longName}</Label></div>
                 <span className="text-lg">{nl.headsign}</span>
-              </div>
+              </Link>
             </div>
           )
           const walkContents = (
