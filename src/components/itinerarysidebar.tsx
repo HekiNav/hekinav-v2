@@ -29,7 +29,7 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
   }
 
   return (
-    <div className="p-4 min-w-80 w-4/10 overflow-scroll h-screen pb-40">
+    <div className="p-4 min-w-80 w-4/10 overflow-y-scroll h-screen pb-40">
       <ItineraryOnMap itinerary={data}></ItineraryOnMap>
       <h1 className="text-2xl">Itinerary</h1>
       <div className="flex flex-row gap-10 text-stone-900 text-sm">
@@ -129,7 +129,7 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
 
               <div key={i + 5 * data.legs.length} hidden={i != data.legs.length - 1}>
                 <RouteItem borderColor={borderColor} color1={borderColor} icon={<Icon className="text-pink-500" icon={faLocationDot}></Icon>}>
-                  <div className="flex flex-ro w-full justify-between"><div>{from.label}</div><div>{formatLegTime(l.end)}</div></div>
+                  <div className="flex flex-ro w-full justify-between"><div>{to.label}</div><div>{formatLegTime(l.end)}</div></div>
                 </RouteItem>
               </div>
             </>

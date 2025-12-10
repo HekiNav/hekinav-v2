@@ -14,7 +14,7 @@ export interface ItinerarySidebarProps {
 
 export default function ItinerarySidebar({ data, from, to, time, depArr }: ItinerarySidebarProps) {
   return (
-    <div className="p-4 min-w-80 w-4/10 overflow-scroll">
+    <div className="p-4 min-w-80 w-4/10 overflow-y-scroll">
       <RoutingSearch origin={from} destination={to} time={utcTime(time)} depArr={depArr == "dep" ? 0 : 1}></RoutingSearch>
       <h1 className="text-xl mb-1 mt-3">Routes</h1>
       <div className="flex flex-col gap-2">

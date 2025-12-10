@@ -21,7 +21,7 @@ export default function DotNavigationThingy({ onSet, amount, selected }: DotNavi
     }
     return <div className="flex flex-row w-full items-center justify-center">
         <Icon onClick={() => onClick(selected - 1)} className={`py-1 pl-1 ${selected == 0 ? "text-stone-500" : "text-stone-800 cursor-pointer"}`} icon={faCaretLeft}></Icon>
-        <div className="flex flex-row flex-nowrap gap-1 overflow-scroll items-center justify-center">{...circles}</div>
+        <div className="flex flex-row flex-nowrap gap-1 items-center justify-center">{...circles}</div>
         <Icon onClick={() => onClick(selected + 1)} className={`py-1 pl-1 ${selected == amount -1 ? "text-stone-500" : "text-stone-800 cursor-pointer"}`} icon={faCaretRight}></Icon>
     </div>
 }

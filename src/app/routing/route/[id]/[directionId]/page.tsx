@@ -78,7 +78,7 @@ export default async function RouteDeparturesView({
       <div>
         <NavDropdown defaultValue={direction} options={options} preItemValue={`/routing/route/${id}/d`} postItemValue="" />
       </div>
-      <div className="grow border-2 border-stone-600 flex flex-col p-2 overflow-scroll">
+      <div className="grow border-2 border-stone-600 flex flex-col p-2 overflow-y-scroll">
         {...stops.map((stop, i) => {
           const deps = depData.data?.route.patterns.find((p: RoutePattern) => p.code == pattern.code)?.stops.find((s: RouteStop) => s.gtfsId == stop.gtfsId).stopTimesForPattern
           return (

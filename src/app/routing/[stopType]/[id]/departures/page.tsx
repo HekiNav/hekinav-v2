@@ -39,7 +39,7 @@ export default async function StopDeparturesView({
         <div hidden={!desc} className=" text-stone-600">{desc}</div>
       </div>
       <h1 className="text-xl mt-4">Departures</h1>
-      <div className="grow border-2 border-stone-600 flex flex-col p-2  overflow-scroll">
+      <div className="grow border-2 border-stone-600 flex flex-col p-2  overflow-y-scroll">
         {...(stoptimesWithoutPatterns as Array<DepartureRow>).map((dep, i) => {
           const color = colors[dep.trip.route.type]
           if (!color) console.log(dep.trip.route.type)

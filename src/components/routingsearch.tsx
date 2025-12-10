@@ -91,7 +91,7 @@ export default function RoutingSearch(props: RoutingSearchProps) {
 
         interface fooba {
             type: "Feature",
-            properties: {[key:string]:string},
+            properties: { [key: string]: string },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             geometry: any
         }
@@ -126,10 +126,15 @@ export default function RoutingSearch(props: RoutingSearchProps) {
         if (originCenter) bounds = bounds.extend(originCenter)
         if (destinationCenter) bounds = bounds.extend(destinationCenter)
 
-        map.fitBounds(bounds,{
+        if (originCenter && destinationCenter) map.fitBounds(bounds, {
             padding: 100,
             duration: 5000,
             animate: true,
+            essential: true
+        })
+        else map.easeTo({
+            center: center,
+            zoom: 13,
             essential: true
         })
 

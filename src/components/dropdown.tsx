@@ -44,7 +44,7 @@ export default function Dropdown({ options, defaultValue, onSet, inline = false}
             </button>
 
             {isOpen && (
-                <div className={`origin-top-right absolute max-h-50 overflow-scroll
+                <div className={`origin-top-right absolute max-h-50 overflow-y-scroll
                                     ${!inline && "bg-white border-2 border-blue-500"} right-0 left-0 z-1001
                                      border-t-0`}>
                     <div className="py-1">
