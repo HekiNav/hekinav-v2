@@ -4,7 +4,8 @@ import { NavBarItem } from "../components/navbaritem"
 
 export interface PagePath {
     n: string,
-    p: string
+    p: string,
+    e?: boolean
 }
 export interface NavBarProps {
     paths: Array<PagePath>
@@ -19,9 +20,9 @@ export default function NavBar({paths}:NavBarProps) {
     return (
         <div className="flex h-15">
             <div className="shadow-md/30 w-full p-2 flex gap-2 font-narrow">
-                {paths.map(({ p, n }, i) => {
+                {paths.map(({ p, n, e }, i) => {
                     const current = currPath == p
-                    return <NavBarItem key={`nav-elem-${i}`} path={p} title={n} current={current}>
+                    return <NavBarItem key={`nav-elem-${i}`} path={p} title={n} external={e} current={current}>
 
                     </NavBarItem>
                 })}

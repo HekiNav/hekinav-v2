@@ -7,6 +7,9 @@ import RouteItem from "./routeitem"
 import Icon from "./icon"
 import Label from "./label"
 import Link from "next/link"
+import { formatDepTime } from "./deptime"
+import LegOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/mapHandler"
+import ItineraryOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/mapHandler"
 
 export interface ItinerarySidebarProps {
   data: Itinerary,
@@ -27,6 +30,7 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
 
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-scroll h-screen pb-40">
+      <ItineraryOnMap itinerary={data}></ItineraryOnMap>
       <h1 className="text-2xl">Itinerary</h1>
       <div className="flex flex-row gap-10 text-stone-900 text-sm">
         <IconItem icon={{ icon: faClockFour }}>
@@ -107,7 +111,9 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
           return (
             <>
               <div key={i + data.legs.length} hidden={i != 0}>
-                <RouteItem borderColor={borderColor} icon={<Icon className="text-green-500" icon={faLocationDot}></Icon>} color2={borderColor}>{from.label}</RouteItem>
+                <RouteItem borderColor={borderColor} icon={<Icon className="text-green-500" icon={faLocationDot}></Icon>} color2={borderColor}>
+                  <div className="flex flex-ro w-full justify-between"><div>{from.label}</div><div>{formatLegTime(l.start)}</div></div>
+                </RouteItem>
               </div>
 
               <div key={i + 2 * data.legs.length} hidden={i != 0}>
@@ -122,7 +128,9 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
               </div>
 
               <div key={i + 5 * data.legs.length} hidden={i != data.legs.length - 1}>
-                <RouteItem borderColor={borderColor} color1={borderColor} icon={<Icon className="text-pink-500" icon={faLocationDot}></Icon>}>{to.label}</RouteItem>
+                <RouteItem borderColor={borderColor} color1={borderColor} icon={<Icon className="text-pink-500" icon={faLocationDot}></Icon>}>
+                  <div className="flex flex-ro w-full justify-between"><div>{from.label}</div><div>{formatLegTime(l.end)}</div></div>
+                </RouteItem>
               </div>
             </>
           )

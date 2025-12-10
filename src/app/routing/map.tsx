@@ -103,8 +103,23 @@ export default function RoutingMap() {
     };
     const routePathLayerStyle = {
         paint: {
-            "line-width": 4,
+            "line-width": 6,
             "line-color": colorInterpolate
+        },
+        layout: {
+            "line-cap": ("round" as never),
+            "line-join": ("round" as never),
+        }
+    };
+    const walkPathLayerStyle = {
+        paint: {
+            "line-width": 8,
+            "line-color": "#78716c",
+            "line-dasharray": [0.5, 1.5]
+        },
+        layout: {
+            "line-cap": ("round" as never),
+            "line-join": ("round" as never),
         }
     };
     const stopLayerStyle = {
@@ -145,7 +160,12 @@ export default function RoutingMap() {
             <Source id="temp-data" type="geojson" data={data || { type: "Feature", geometry: { type: "Point", coordinates: [25, 60] } }}>
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...stopLayerStyle}></Layer>
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "route-stop"]} id="temp-route-stop" {...routeStopLayerStyle}></Layer>
+
+
                 <Layer beforeId="temp-route-stop" source="temp-data" type="line" filter={["==", ["get", "type"], "route-path"]} id="temp-route-path" {...routePathLayerStyle}></Layer>
+                <Layer beforeId="temp-route-path" source="temp-data" type="line" filter={["==", ["get", "type"], "walk-path"]} id="temp-walk-path" {...walkPathLayerStyle}></Layer>
+
+
                 <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "destination-marker"]} id="temp-destination" {...destinationMarkerStyle}></Layer>
                 <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "origin-marker"]} id="temp-origin" {...originMarkerStyle}></Layer>
             </Source>

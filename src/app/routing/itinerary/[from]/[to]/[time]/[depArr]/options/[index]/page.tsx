@@ -30,7 +30,7 @@ export default function RouteDeparturesView() {
 
   return (
     <div>
-      <DotNavigationThingy amount={data.edges.length} selected={i} onSet={(i) => nav.push(`./i${i}`)}></DotNavigationThingy>
+      <DotNavigationThingy amount={data.edges.length} selected={i} onSet={(i) => nav.replace(`./i${i}`)}></DotNavigationThingy>
       <ItinerarySidebar data={data.edges[i].node} from={from} to={to} time={time} depArr={depArr}></ItinerarySidebar>
     </div>
   )

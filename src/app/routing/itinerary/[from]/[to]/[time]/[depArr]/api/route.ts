@@ -46,7 +46,9 @@ query Itineraries(
               platformCode,
               code,
               gtfsId,
-              desc
+              desc,
+              lat,
+              lon
             }
           }
           to {
@@ -56,7 +58,9 @@ query Itineraries(
               platformCode,
               code,
               gtfsId,
-              desc
+              desc,
+              lat, 
+              lon
             }
           }
           start {
@@ -194,5 +198,7 @@ export interface IStop {
   platformCode?: string
   code?: string,
   gtfsId: string,
-  desc: string
+  desc: string,
+  lat: number,
+  lon: number
 }

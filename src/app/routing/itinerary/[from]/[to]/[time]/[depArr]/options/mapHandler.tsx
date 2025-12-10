@@ -1,56 +1,58 @@
 "use client"
 import { useMap } from "react-map-gl/maplibre";
-import { RoutePattern, Route } from "@/app/routing/route/[id]/[directionId]/page";
 import { decode } from "@googlemaps/polyline-codec";
+import { Itinerary } from "../api/route";
+import { GeoJSONSource } from "maplibre-gl";
 
-export default function RouteOnMap({ route, pattern }: { route: Route, pattern: RoutePattern, depArr: string, time: string }) {
+export default function ItineraryOnMap({ itinerary }: { itinerary: Itinerary }) {
+
 
     const { map } = useMap()!
-    const color = getColor(route.type);
+
+    const stops: GeoJSON.Feature[] = []
 
     function addThingsToMap() {
-        if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap,1000)
-        const patternShape: [number, number][] = decode(pattern.patternGeometry.points).map(([lat, lon]) => [lon, lat])
-
-        /* const bounds = patternShape.reduce((bounds, coord) => {
-            return bounds.extend(coord);
-        }, new LngLatBounds([patternShape[0], patternShape[0]]));
-
-        map.fitBounds(bounds, {
-            essential: true,
-            padding: 100
+        if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap, 1000)
+        const patternShapes: GeoJSON.Feature[] = itinerary.legs.map(leg => {
+            const color = getColor(leg.route?.type || 1000)
+            if (leg.transitLeg) {
+                stops.push(...([leg.to, leg.from].map(p => ({
+                    type: ("Feature" as never),
+                    properties: {
+                        type: "route-stop",
+                        color: color
+                    },
+                    geometry: {
+                        type: ("Point" as never),
+                        coordinates: [
+                            p.stop?.lon || 0, p.stop?.lat || 0
+                        ]
+                    }
+                }))))
+            }
+            console.log(stops)
+            return {
+                type: "Feature",
+                properties: {
+                    type: leg.transitLeg ? "route-path" : "walk-path",
+                    color: color
+                },
+                geometry: {
+                    type: "LineString",
+                    coordinates: decode(leg.legGeometry.points).map(([lat, lon]) => [lon, lat])
+                }
+            }
         })
+
 
             ; (map.getSource("temp-data") as GeoJSONSource).setData({
                 type: "FeatureCollection",
                 features: [
-                    {
-                        type: "Feature",
-                        properties: {
-                            type: "route-stop",
-                            color: color
-                        },
-                        geometry: {
-                            type: "MultiPoint",
-                            coordinates: [
-                                ...pattern.stops.map(s => [s.lon, s.lat])
-                            ]
-                        }
-                    },
-                    {
-                        type: "Feature",
-                        properties: {
-                            type: "route-path",
-                            color: color
-                        },
-                        geometry: {
-                            type: "LineString",
-                            coordinates: patternShape
-                        }
-                    }
+                    ...stops,
+                    ...patternShapes
                 ]
 
-            }) */
+            })
     }
     addThingsToMap()
     return (<></>)
