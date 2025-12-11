@@ -4,8 +4,7 @@ import { decode } from "@googlemaps/polyline-codec";
 import { Itinerary } from "../api/route";
 import { GeoJSONSource } from "maplibre-gl";
 
-export default function ItineraryOnMap({ itinerary }: { itinerary: Itinerary }) {
-
+export default function ItineraryCollectionOnMap({ itineraries, selected }: { itineraries: Itinerary[], selected?: number | null }) {
 
     const { map } = useMap()!
 
@@ -13,35 +12,40 @@ export default function ItineraryOnMap({ itinerary }: { itinerary: Itinerary }) 
 
     function addThingsToMap() {
         if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap, 1000)
-        const patternShapes: GeoJSON.Feature[] = itinerary.legs.map(leg => {
-            const color = getColor(leg.route?.type || 1000)
-            if (leg.transitLeg) {
-                stops.push(...([leg.to, leg.from].map(p => ({
-                    type: ("Feature" as never),
+        
+
+        const patternShapes: GeoJSON.Feature[][] = itineraries.map((itinerary, index) => {
+            const thisSelected = index == selected
+            return itinerary.legs.map(leg => {
+                const color = getColor(leg.route?.type || 1000)
+                if (leg.transitLeg && thisSelected) {
+                    stops.push(...([leg.to, leg.from].map(p => ({
+                        type: ("Feature" as never),
+                        properties: {
+                            type: "route-stop",
+                            color: color
+                        },
+                        geometry: {
+                            type: ("Point" as never),
+                            coordinates: [
+                                p.stop?.lon || 0, p.stop?.lat || 0
+                            ]
+                        }
+                    }))))
+                }
+                console.log(stops)
+                return {
+                    type: "Feature",
                     properties: {
-                        type: "route-stop",
+                        type: thisSelected ? (leg.transitLeg ? "route-path" : "walk-path") : "bg-route-path",
                         color: color
                     },
                     geometry: {
-                        type: ("Point" as never),
-                        coordinates: [
-                            p.stop?.lon || 0, p.stop?.lat || 0
-                        ]
+                        type: "LineString",
+                        coordinates: decode(leg.legGeometry.points).map(([lat, lon]) => [lon, lat])
                     }
-                }))))
-            }
-            console.log(stops)
-            return {
-                type: "Feature",
-                properties: {
-                    type: leg.transitLeg ? "route-path" : "walk-path",
-                    color: color
-                },
-                geometry: {
-                    type: "LineString",
-                    coordinates: decode(leg.legGeometry.points).map(([lat, lon]) => [lon, lat])
                 }
-            }
+            })
         })
 
 
@@ -49,7 +53,7 @@ export default function ItineraryOnMap({ itinerary }: { itinerary: Itinerary }) 
                 type: "FeatureCollection",
                 features: [
                     ...stops,
-                    ...patternShapes
+                    ...patternShapes.flat()
                 ]
 
             })

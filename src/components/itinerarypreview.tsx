@@ -2,36 +2,44 @@ import { Itinerary, Leg, LegTime } from "@/app/routing/itinerary/[from]/[to]/[ti
 import DepTime from "./deptime";
 import { DepartureRow } from "@/app/routing/[stopType]/[id]/departures/page";
 import Icon from "./icon";
-import { faWalking } from "@fortawesome/free-solid-svg-icons";
+import { faCaretRight, faWalking } from "@fortawesome/free-solid-svg-icons";
 import RouteComposition from "./routecomposition";
+import Link from "next/link";
 
 export interface ItineraryPreviewProps {
-    itinerary: Itinerary
+    itinerary: Itinerary,
+    onSelect: () => void,
+    link: string
 }
 
-export default function ItineraryPreview({ itinerary }: ItineraryPreviewProps) {
+export default function ItineraryPreview({ itinerary, onSelect, link }: ItineraryPreviewProps) {
     const
         { end, start, duration, legs, walkDistance } = itinerary
     const firstTransitLeg = legs.find(l => l.transitLeg)
 
     return (
-        <div className="border-2 border-stone-600 w-full p-2 flex flex-col">
-            <div className="flex flex-row justify-between">
-                <div>{formatTime(start)} - {formatTime(end)}</div><div>{formatDuration(duration)}</div>
-            </div>
-            <RouteComposition legs={legs}></RouteComposition>
-            <div className="flex flex-row justify-between align-center">
-                <div className="flex flex-row" style={{marginTop: "calc(var(--spacing) * 0.5)"}}>
-                    <div hidden={!firstTransitLeg} className="text-sm text-stone-500 flex flex-nowrap">
-                        Leaves&nbsp;<DepTime short preposition dep={legTimeToDepRow((firstTransitLeg as Leg).start)} />
-                        &nbsp;from {firstTransitLeg?.from.name}</div>
-                    <div hidden={!!firstTransitLeg} className="text-sm text-stone-500">Leave whenever</div>
+        <div className="flex flex-row w-full border-2 border-stone-600 w-full">
+            <div className=" flex flex-col grow p-2 cursor-pointer" onClick={onSelect}>
+                <div className="flex flex-row justify-between">
+                    <div>{formatTime(start)} - {formatTime(end)}</div><div>{formatDuration(duration)}</div>
                 </div>
+                <RouteComposition legs={legs}></RouteComposition>
+                <div className="flex flex-row justify-between align-center">
+                    <div className="flex flex-row" style={{ marginTop: "calc(var(--spacing) * 0.5)" }}>
+                        <div hidden={!firstTransitLeg} className="text-sm text-stone-500 flex flex-nowrap">
+                            Leaves&nbsp;<DepTime short preposition dep={legTimeToDepRow((firstTransitLeg as Leg).start)} />
+                            &nbsp;from {firstTransitLeg?.from.name}</div>
+                        <div hidden={!!firstTransitLeg} className="text-sm text-stone-500">Leave whenever</div>
+                    </div>
 
-                <div className="flex flex-row flex-nowrap align-center"><Icon className="mr-1" small icon={faWalking}></Icon>{Math.round(walkDistance)}m</div>
+                    <div className="flex flex-row flex-nowrap align-center"><Icon className="mr-1" small icon={faWalking}></Icon>{Math.round(walkDistance)}m</div>
+                </div>
             </div>
-
+            <Link href={link} className="border-stone-600 border-l-2 flex flex-row align-center">
+                <Icon icon={faCaretRight} className="text-stone-800 h-full"></Icon>
+            </Link>
         </div>
+
     )
 }
 export function legTimeToDepRow(time: LegTime): DepartureRow {

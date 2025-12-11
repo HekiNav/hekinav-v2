@@ -72,7 +72,7 @@ export default function RoutingMap() {
     }
     //const [tempData, setTempData] = useState()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const colorInterpolate: ["interpolate", any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any] = [
+    const colorInterpolate: ["interpolate", any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any] = [
         'interpolate', ['linear'], ["get", "color"],
         0,
         "#3b82f6",
@@ -92,6 +92,8 @@ export default function RoutingMap() {
         "#16a34a",
         8,
         "#000",
+        9,
+        "#78716c",
     ]
     const routeStopLayerStyle = {
         paint: {
@@ -105,6 +107,16 @@ export default function RoutingMap() {
         paint: {
             "line-width": 6,
             "line-color": colorInterpolate
+        },
+        layout: {
+            "line-cap": ("round" as never),
+            "line-join": ("round" as never),
+        }
+    };
+    const bgRoutePathLayerStyle = {
+        paint: {
+            "line-width": 4,
+            "line-color": "#78716c"
         },
         layout: {
             "line-cap": ("round" as never),
@@ -162,9 +174,12 @@ export default function RoutingMap() {
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "route-stop"]} id="temp-route-stop" {...routeStopLayerStyle}></Layer>
 
 
+
                 <Layer beforeId="temp-route-stop" source="temp-data" type="line" filter={["==", ["get", "type"], "route-path"]} id="temp-route-path" {...routePathLayerStyle}></Layer>
+
                 <Layer beforeId="temp-route-path" source="temp-data" type="line" filter={["==", ["get", "type"], "walk-path"]} id="temp-walk-path" {...walkPathLayerStyle}></Layer>
 
+                <Layer beforeId="temp-route-path" source="temp-data" type="line" filter={["==", ["get", "type"], "bg-route-path"]} id="temp-bg-route-path" {...bgRoutePathLayerStyle}></Layer>
 
                 <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "destination-marker"]} id="temp-destination" {...destinationMarkerStyle}></Layer>
                 <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "origin-marker"]} id="temp-origin" {...originMarkerStyle}></Layer>

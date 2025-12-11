@@ -8,8 +8,8 @@ import Icon from "./icon"
 import Label from "./label"
 import Link from "next/link"
 import { formatDepTime } from "./deptime"
-import LegOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/mapHandler"
-import ItineraryOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/mapHandler"
+import LegOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/[index]/mapHandler"
+import ItineraryOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/[index]/mapHandler"
 
 export interface ItinerarySidebarProps {
   data: Itinerary,

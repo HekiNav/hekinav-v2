@@ -11,7 +11,7 @@ export default function RouteComposition({legs}: {legs: Leg[]}) {
                 const percent = (l.duration / totalDuration)
                 const text = getText(l)
                 return (
-                    <div style={{width: `${percent * 100}%`}} className={`px-1 text-white flex flex-row align-center ${color}`} key={i}>{text}</div>
+                    <div title={l.transitLeg ? (l.route?.shortName || l.route?.longName || "ROUTE") : "Walk"} style={{width: `${percent * 100}%`}} className={`px-1 text-white flex flex-row align-center ${color}`} key={i}>{text}</div>
                 )
             })}
         </div>
