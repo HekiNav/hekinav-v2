@@ -18,7 +18,7 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
   const [selected, setSelected] = useState<number | null>(null)
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-y-scroll">
-      <ItineraryCollectionOnMap selected={selected} itineraries={data.edges.map(e => e.node)}></ItineraryCollectionOnMap>
+      <ItineraryCollectionOnMap origin={from} destination={to} selected={selected} itineraries={data.edges.map(e => e.node)}></ItineraryCollectionOnMap>
       <RoutingSearch origin={from} destination={to} time={utcTime(time)} depArr={depArr == "dep" ? 0 : 1}></RoutingSearch>
       <h1 className="text-xl mb-1 mt-3">Routes</h1>
       <div className="flex flex-col gap-2">

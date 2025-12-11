@@ -1,10 +1,10 @@
 "use client"
 import { useMap } from "react-map-gl/maplibre";
 import { decode } from "@googlemaps/polyline-codec";
-import { Itinerary } from "../../api/route";
-import { GeoJSONSource } from "maplibre-gl";
+import { IEndStartPoint, Itinerary } from "../../api/route";
+import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
 
-export default function ItineraryOnMap({ itinerary }: { itinerary: Itinerary }) {
+export default function ItineraryOnMap({ itinerary, origin, destination }: { itinerary: Itinerary, origin: IEndStartPoint, destination: IEndStartPoint  }) {
 
 
     const { map } = useMap()!
@@ -49,10 +49,38 @@ export default function ItineraryOnMap({ itinerary }: { itinerary: Itinerary }) 
                 type: "FeatureCollection",
                 features: [
                     ...stops,
-                    ...patternShapes
+                    ...patternShapes,
+                    {
+                        type: "Feature",
+                        properties: {
+                            type: "destination-marker"
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: Object.values(destination.location.coordinate).reverse()
+                        }
+                    },
+                    {
+                        type: "Feature",
+                        properties: {
+                            type: "origin-marker"
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: Object.values(origin.location.coordinate).reverse()
+                        }
+                    }
                 ]
 
             })
+        const stopsAsPoints = (stops as GeoJSON.Feature<GeoJSON.Point,GeoJSON.GeoJsonProperties>[])
+        const firstCoords= stopsAsPoints[0].geometry.coordinates as [number, number]
+        const bounds = stopsAsPoints.reduce((prev, curr) => prev.extend(curr.geometry.coordinates as [number, number]),new LngLatBounds(firstCoords,firstCoords))
+        map.fitBounds(bounds, {
+            essential: true,
+            padding: 100,
+            duration: 2000
+        })
     }
     addThingsToMap()
     return (<></>)

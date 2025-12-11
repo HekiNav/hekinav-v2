@@ -30,7 +30,7 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
 
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-y-scroll h-screen pb-40">
-      <ItineraryOnMap itinerary={data}></ItineraryOnMap>
+      <ItineraryOnMap destination={to} origin={from} itinerary={data}></ItineraryOnMap>
       <h1 className="text-2xl">Itinerary</h1>
       <div className="flex flex-row gap-10 text-stone-900 text-sm">
         <IconItem icon={{ icon: faClockFour }}>

@@ -1,10 +1,10 @@
 "use client"
 import { useMap } from "react-map-gl/maplibre";
 import { decode } from "@googlemaps/polyline-codec";
-import { Itinerary } from "../api/route";
-import { GeoJSONSource } from "maplibre-gl";
+import { IEndStartPoint, Itinerary } from "../api/route";
+import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
 
-export default function ItineraryCollectionOnMap({ itineraries, selected }: { itineraries: Itinerary[], selected?: number | null }) {
+export default function ItineraryCollectionOnMap({ itineraries, selected, origin, destination }: { itineraries: Itinerary[], selected?: number | null, origin: IEndStartPoint, destination: IEndStartPoint }) {
 
     const { map } = useMap()!
 
@@ -12,7 +12,7 @@ export default function ItineraryCollectionOnMap({ itineraries, selected }: { it
 
     function addThingsToMap() {
         if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap, 1000)
-        
+
 
         const patternShapes: GeoJSON.Feature[][] = itineraries.map((itinerary, index) => {
             const thisSelected = index == selected
@@ -47,16 +47,46 @@ export default function ItineraryCollectionOnMap({ itineraries, selected }: { it
                 }
             })
         })
-
+        const originFeat = {
+            type: ("Feature" as never),
+            properties: {
+                type: "origin-marker"
+            },
+            geometry: {
+                type: ("Point" as never),
+                coordinates: Object.values(origin.location.coordinate).reverse()
+            }
+        }
+        const destinationFeat = {
+            type: ("Feature" as never),
+            properties: {
+                type: "destination-marker"
+            },
+            geometry: {
+                type: ("Point" as never),
+                coordinates: Object.values(destination.location.coordinate).reverse()
+            }
+        }
 
             ; (map.getSource("temp-data") as GeoJSONSource).setData({
                 type: "FeatureCollection",
                 features: [
                     ...stops,
-                    ...patternShapes.flat()
+                    ...patternShapes.flat(),
+                    destinationFeat,
+                    originFeat
                 ]
 
             })
+        const stopsAsPoints = ([...stops, originFeat, destinationFeat] as GeoJSON.Feature<GeoJSON.Point, GeoJSON.GeoJsonProperties>[])
+        
+        const firstCoords = stopsAsPoints[0].geometry.coordinates as [number, number]
+        const bounds = stopsAsPoints.reduce((prev, curr) => prev.extend(curr.geometry.coordinates as [number, number]), new LngLatBounds(firstCoords, firstCoords))
+        map.fitBounds(bounds, {
+            essential: true,
+            padding: 100,
+            duration: 2000
+        })
     }
     addThingsToMap()
     return (<></>)
