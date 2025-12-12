@@ -190,7 +190,10 @@ export default function RoutingMap() {
             'icon-image': 'vehicle-base',
             "icon-allow-overlap": true,
             'icon-size': 0.2,
-            "icon-anchor": ("center" as never)
+            "icon-anchor": ("center" as never),
+            "icon-rotate": (["get", "rotation"] as ["get", string]),
+            "icon-pitch-alignment": ("viewport" as never),
+            "icon-rotation-alignment": ("map" as never)
         }
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

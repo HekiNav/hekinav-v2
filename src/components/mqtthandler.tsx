@@ -39,7 +39,8 @@ export default function MqttVehiclesOnMap({ topics, colorTable }: MqttVehiclesPr
                 vehicles.set(id, {
                     position: [data.long, data.lat],
                     route: data.desi || "?",
-                    color: color
+                    color: color,
+                    rotation: data.hdg || 0
                 })
             }
             scheduleUpdate()
@@ -69,7 +70,8 @@ export default function MqttVehiclesOnMap({ topics, colorTable }: MqttVehiclesPr
                         type: "vehicle",
                         color: v.color,
                         textLength: v.route.length,
-                        text: v.route
+                        text: v.route,
+                        rotation: v.rotation
                     }
                 }
             }));
@@ -133,7 +135,8 @@ export interface HFPMessage {
 export interface Vehicle {
     position: [number, number],
     route: string,
-    color: number
+    color: number,
+    rotation: number
 }
 export enum HFPLocationSource {
     GPS = "GPS",
