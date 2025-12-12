@@ -3,8 +3,7 @@ import { getPageUrlFromStopIdWithoutPrefix, mapContext } from "./layout"
 import Map, { Layer, LngLat, MapGeoJSONFeature, MapMouseEvent, Source, useMap } from "react-map-gl/maplibre";
 import { useConfig } from "@/components/configprovider";
 import MultiSelectPopup from "@/components/multiselectpopup";
-import { usePathname, useRouter } from "next/navigation";
-import { GeoJSONSource } from "maplibre-gl";
+import { useRouter } from "next/navigation";
 
 export default function RoutingMap() {
     const { data } = useContext(mapContext)
@@ -16,6 +15,16 @@ export default function RoutingMap() {
     const [popups, setPopups] = useState<ReactNode[]>([])
 
     const nav = useRouter()
+
+    /* const pathname = usePathname()
+
+    useEffect(() => {
+        if (!map || !map.getSource("temp-data")) return
+        (map?.getSource("temp-data") as GeoJSONSource).setData({
+            type: "FeatureCollection",
+            features: []
+        })
+    }, [pathname]) */
 
     const layers = ["stops_case", "stops_rail_case", "stops_hub", "stops_rail_hub"]
 
@@ -30,14 +39,28 @@ export default function RoutingMap() {
             const imageRed = document.createElement("img")
             imageRed.src = "/map-pin-red.svg"
             imageRed.addEventListener("load", () => {
-                if (!map.getImage("map-pin")) map.addImage("map-pin-red", imageRed)
+                if (!map.getImage("map-pin-red")) map.addImage("map-pin-red", imageRed)
             })
         }
         if (!map.getImage("map-pin-green")) {
             const imageGreen = document.createElement("img")
             imageGreen.src = "/map-pin-green.svg"
             imageGreen.addEventListener("load", () => {
-                if (!map.getImage("map-pin")) map.addImage("map-pin-green", imageGreen)
+                if (!map.getImage("map-pin-green")) map.addImage("map-pin-green", imageGreen)
+            })
+        }
+        if (!map.getImage("vehicle-base")) {
+            const imageGreen = document.createElement("img")
+            imageGreen.src = "/vehicle.svg"
+            imageGreen.addEventListener("load", () => {
+                if (!map.getImage("vehicle-base")) map.addImage("vehicle-base", imageGreen)
+            })
+        }
+        if (!map.getImage("vehicle-empty")) {
+            const imageGreen = document.createElement("img")
+            imageGreen.src = "/empty.svg"
+            imageGreen.addEventListener("load", () => {
+                if (!map.getImage("vehicle-empty")) map.addImage("vehicle-empty", imageGreen)
             })
         }
 
@@ -156,6 +179,47 @@ export default function RoutingMap() {
             "icon-anchor": ("bottom" as never)
         }
     };
+    const vehicleCircleLayerStyle = {
+        paint: {
+            "circle-radius": 10,
+            "circle-color": colorInterpolate
+        }
+    };
+    const vehicleBaseLayerStyle = {
+        layout: {
+            'icon-image': 'vehicle-base',
+            "icon-allow-overlap": true,
+            'icon-size': 0.2,
+            "icon-anchor": ("center" as never)
+        }
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const textSizeInterpolate: ["interpolate", any,any, number,number,number,number,number,number,number,number,number,number] = [
+        'interpolate', ['linear'], ["get", "textLength"],
+        1,
+        15,
+        2,
+        10,
+        3,
+        8,
+        4,
+        6,
+        5,
+        5,
+    ]
+    const vehicleTextLayerStyle = {
+        layout: {
+            "text-field": (["format",["get", "text"]] as ["format", ["get", string]]),
+            "text-size": textSizeInterpolate,
+            "text-font": ["Gotham Rounded Medium"],
+            "text-offset": ([0,0.2] as [number, number]),
+            "text-allow-overlap": true,
+        },
+        paint: {
+            "text-color": "white"
+
+        }
+    };
     return (
         <Map
             id="map"
@@ -169,9 +233,10 @@ export default function RoutingMap() {
             onLoad={() => onMapLoad()}
             onMouseMove={() => onMapLoad(false)}
         > {popups}
+
             <Source id="temp-data" type="geojson" data={data || { type: "Feature", geometry: { type: "Point", coordinates: [25, 60] } }}>
                 <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "stop"]} id="temp-stop" {...stopLayerStyle}></Layer>
-                <Layer source="temp-data" type="circle" filter={["==", ["get", "type"], "route-stop"]} id="temp-route-stop" {...routeStopLayerStyle}></Layer>
+                <Layer beforeId="temp-stop" source="temp-data" type="circle" filter={["==", ["get", "type"], "route-stop"]} id="temp-route-stop" {...routeStopLayerStyle}></Layer>
 
 
 
@@ -183,6 +248,11 @@ export default function RoutingMap() {
 
                 <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "destination-marker"]} id="temp-destination" {...destinationMarkerStyle}></Layer>
                 <Layer source="temp-data" type="symbol" filter={["==", ["get", "type"], "origin-marker"]} id="temp-origin" {...originMarkerStyle}></Layer>
+            </Source>
+            <Source id="mqtt-data" type="geojson" data={{ type: "FeatureCollection", features: [] }}>
+                <Layer beforeId="temp-stop" source="mqtt-data" type="symbol" filter={["==", ["get", "type"], "vehicle"]} id="mqtt-vehicle-text" {...vehicleTextLayerStyle}></Layer>
+                <Layer beforeId="mqtt-vehicle-text" source="mqtt-data" type="circle" filter={["==", ["get", "type"], "vehicle"]} id="mqtt-vehicle-circle" {...vehicleCircleLayerStyle}></Layer>
+                <Layer beforeId="mqtt-vehicle-circle" source="mqtt-data" type="symbol" filter={["==", ["get", "type"], "vehicle"]} id="mqtt-vehicle-base" {...vehicleBaseLayerStyle}></Layer>
             </Source>
         </Map>
     )

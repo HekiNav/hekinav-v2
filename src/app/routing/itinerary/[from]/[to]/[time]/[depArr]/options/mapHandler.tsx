@@ -33,7 +33,6 @@ export default function ItineraryCollectionOnMap({ itineraries, selected, origin
                         }
                     }))))
                 }
-                console.log(stops)
                 return {
                     type: "Feature",
                     properties: {

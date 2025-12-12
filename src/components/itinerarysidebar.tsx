@@ -20,7 +20,6 @@ export interface ItinerarySidebarProps {
 }
 
 export default function ItinerarySidebar({ data, from, to, time, depArr }: ItinerarySidebarProps) {
-  console.log(data)
   function formatLegTime(time: LegTime) {
     if (time.estimated) {
       return <span className="text-lime-500">{formatTime(time.estimated.time)}</span>

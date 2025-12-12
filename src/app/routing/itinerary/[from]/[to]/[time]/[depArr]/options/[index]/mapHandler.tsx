@@ -30,7 +30,6 @@ export default function ItineraryOnMap({ itinerary, origin, destination }: { iti
                     }
                 }))))
             }
-            console.log(stops)
             return {
                 type: "Feature",
                 properties: {

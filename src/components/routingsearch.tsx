@@ -119,7 +119,6 @@ export default function RoutingSearch(props: RoutingSearchProps) {
             }
         })
 
-        console.log(feats)
 
         let bounds = new LngLatBounds(center, center)
 
