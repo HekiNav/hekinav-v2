@@ -2,26 +2,33 @@
 import { IEndStartPoint, PlannedConnection } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route"
 import RoutingSearch from "./routingsearch"
 import ItineraryPreview from "./itinerarypreview"
-import Link from "next/link"
 import ItineraryCollectionOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/mapHandler"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export interface ItinerarySidebarProps {
-  data: PlannedConnection,
+  data: PlannedConnection | null,
   from: IEndStartPoint,
   to: IEndStartPoint,
   time: number,
-  depArr: string
+  depArr: string,
+  after: () => void
+  before: () => void
 }
 
-export default function ItinerarySidebar({ data, from, to, time, depArr }: ItinerarySidebarProps) {
+export default function ItinerarySidebar({ data, from, to, time, depArr, after, before }: ItinerarySidebarProps) {
   const [selected, setSelected] = useState<number | null>(null)
+  if (!data) return (
+    <div>
+      uh oh
+    </div>
+  )
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-y-scroll">
       <ItineraryCollectionOnMap origin={from} destination={to} selected={selected} itineraries={data.edges.map(e => e.node)}></ItineraryCollectionOnMap>
       <RoutingSearch origin={from} destination={to} time={time} depArr={depArr == "dep" ? 0 : 1}></RoutingSearch>
       <h1 className="text-xl mb-1 mt-3">Routes</h1>
       <div className="flex flex-col gap-2">
+        <button onClick={before} className="w-full border-2 p-2">Departing earlier</button>
         {...data.edges.map((e, i) => (
           <ItineraryPreview key={i} onSelect={() => setSelected(i)} link={`./options/i${i}`} itinerary={e.node}></ItineraryPreview>
         ))}

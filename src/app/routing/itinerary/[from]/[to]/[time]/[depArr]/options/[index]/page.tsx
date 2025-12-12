@@ -6,7 +6,7 @@ import { itineraryContext } from "../contextMaker"
 import { redirect, useParams, useRouter } from "next/navigation"
 import DotNavigationThingy from "@/components/dotnavigationthingy"
 import MqttVehiclesOnMap from "@/components/mqtthandler"
-import {formatInTimeZone, fromZonedTime} from "date-fns-tz"
+import {formatInTimeZone} from "date-fns-tz"
 
 export default function RouteDeparturesView() {
   const c = useContext(itineraryContext)

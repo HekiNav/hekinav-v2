@@ -12,7 +12,8 @@ export interface ItineraryContext {
   to: IEndStartPoint,
   depArr: string,
   time: number,
-  data: PlannedConnection
+  data: PlannedConnection,
+  loadMore?: (from: IEndStartPoint, to: IEndStartPoint, depArr: string, time: number, type: 1 | 2, cursor: string) => Promise<PlannedConnection | null>,
 }
 
 export default async function ItineraryLayout({
@@ -23,8 +24,8 @@ export default async function ItineraryLayout({
 
 
   const
-      fromJ = JSON.parse(decodeURIComponent(from)),
-      toJ = JSON.parse(decodeURIComponent(to))
+    fromJ = JSON.parse(decodeURIComponent(from)),
+    toJ = JSON.parse(decodeURIComponent(to))
 
   const { data, error } = await getItineraryData(fromJ, toJ, depArr, Number(time))
 
@@ -43,8 +44,14 @@ export default async function ItineraryLayout({
       data: data.planConnection,
       depArr: depArr,
       time: Number(time)
-    }}>
+    }}
+      loadMore={loadMore}>
       {children}
     </ItineraryContextProvider>
   )
+}
+export async function loadMore(from: IEndStartPoint, to: IEndStartPoint, depArr: string, time: number, type: 1 | 2, cursor: string) {
+  const { data, error } = await getItineraryData(from, to, depArr, time, type, cursor)
+  if (!data || error) return null
+  return data.planConnection
 }

@@ -18,92 +18,95 @@ export const querys: {
   [key: string]: TypedDocumentNode
 } = {
   first: gql`
-query Itineraries(
-  $from: PlanLabeledLocationInput!
-  $to: PlanLabeledLocationInput!
-  $time: PlanDateTimeInput
-) {
-  planConnection(origin: $from, destination: $to, first: 10, dateTime: $time) {
-    pageInfo {
-      startCursor
-      endCursor
-    }
-    edges {
-      node {
-        duration
-        start
-        end
-        walkDistance
-        waitingTime
-        walkTime
-        legs {
-          distance
-          transitLeg
-          from {
-            name
-            stop {
-              name
-              platformCode,
-              code,
-              gtfsId,
-              desc,
-              lat,
-              lon
-            }
-          }
-          to {
-            name
-            stop {
-              name
-              platformCode,
-              code,
-              gtfsId,
-              desc,
-              lat, 
-              lon
-            }
-          }
-          start {
-            scheduledTime
-            estimated {
-              delay
-              time
-            }
-          }
-          end {
-            scheduledTime
-            estimated {
-              delay
-              time
-            }
-          }
-          mode
-          
-          legGeometry {
-            points
-            length
-          }
+  query Itineraries(
+    $from: PlanLabeledLocationInput!
+    $to: PlanLabeledLocationInput!
+    $time: PlanDateTimeInput,
+    $after: String,
+    $before: String
+  ) {
+    planConnection(after: $after,before: $before,origin: $from, destination: $to, first: 10, dateTime: $time) {
+      pageInfo {
+        startCursor
+        endCursor
+      }
+      edges {
+        node {
           duration
-          realtimeState
-          route {
-            type
-            shortName
-            gtfsId
-            longName
-          }
-          trip {
-            directionId
-            departureStoptime {
-              scheduledDeparture
-              serviceDay
+          start
+          end
+          walkDistance
+          waitingTime
+          walkTime
+          legs {
+            distance
+            duration
+            transitLeg
+            from {
+              name
+              stop {
+                name
+                platformCode,
+                code,
+                gtfsId,
+                desc,
+                lat,
+                lon
+              }
             }
+            to {
+              name
+              stop {
+                name
+                platformCode,
+                code,
+                gtfsId,
+                desc,
+                lat,
+                lon
+              }
+            }
+            start {
+              scheduledTime
+              estimated {
+                delay
+                time
+              }
+            }
+            end {
+              scheduledTime
+              estimated {
+                delay
+                time
+              }
+            }
+            mode
+            
+            legGeometry {
+              points
+              length
+            }
+            duration
+            realtimeState
+            trip {
+              directionId
+              departureStoptime {
+                scheduledDeparture
+                serviceDay
+              }
+            }
+            route {
+              type
+              shortName
+              gtfsId
+              longName
+            }
+            headsign
           }
-          headsign
         }
       }
     }
   }
-}
     `
 }
 
@@ -111,16 +114,21 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   const { from, to, depArr, time } = await params
 
+  const urlparams = request.nextUrl.searchParams
+
+  const ba = urlparams.has("before") ? BA.BEFORE : (urlparams.has("after") ? BA.AFTER : undefined)
+
   const
     fromJ = JSON.parse(from),
     toJ = JSON.parse(to),
 
-    result = await getItineraryData(fromJ, toJ, depArr, Number(time))
+    result = await getItineraryData(fromJ, toJ, depArr, Number(time), ba, urlparams.get("before") || urlparams.get("after"))
 
   return Response.json(result)
 }
-export async function getItineraryData(from: IEndStartPoint, to: IEndStartPoint, depArr: string, time: number): Promise<{ data: { planConnection: PlannedConnection }, error: never }> {
+export async function getItineraryData(from: IEndStartPoint, to: IEndStartPoint, depArr: string, time: number, beforeAfter?: 1 | 2, cursor?: string | null): Promise<{ data: { planConnection: PlannedConnection }, error: never }> {
 
+  console.log(beforeAfter, cursor)
 
   const query = querys.first
 
@@ -131,11 +139,19 @@ export async function getItineraryData(from: IEndStartPoint, to: IEndStartPoint,
     variables: {
       from: from,
       to: to,
-      time: depArr == "dep" ? { earliestDeparture: timeString } : { latestArrival: timeString }
+      time: depArr == "dep" ? { earliestDeparture: timeString } : { latestArrival: timeString },
+      before: beforeAfter == BA.BEFORE && cursor ? cursor : "",
+      after: beforeAfter == BA.AFTER && cursor ? cursor : ""
     }
   }) as { data: { planConnection: PlannedConnection }, error: never })
 }
-
+export const BA: {
+  BEFORE: 1,
+  AFTER: 2
+} = {
+  BEFORE: 1,
+  AFTER: 2
+}
 export interface IEndStartPoint {
   location: { coordinate: IPos, }
   label: string
