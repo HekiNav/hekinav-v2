@@ -36,13 +36,14 @@ export default function MqttVehiclesOnMap({ topics, colorTable }: MqttVehiclesPr
 
             console.log(colorTable, data.route, colorTable[data.route || ""])
 
-            if (data && data.lat && data.long) {
+            if (data && data.lat && data.long && (!data.seq || data.seq == 1)) {
                 const id = `${operator_id}/${vehicle_number}`
                 vehicles.set(id, {
                     position: [data.long, data.lat],
                     route: data.desi || "?",
                     color: Number.isNaN(color) ? 8 : color,
-                    rotation: data.hdg || 0
+                    rotation: data.hdg || 0,
+                    lastUpdate: Date.now()
                 })
             }
             scheduleUpdate()
@@ -83,8 +84,15 @@ export default function MqttVehiclesOnMap({ topics, colorTable }: MqttVehiclesPr
                 features: features
             })
         }
+        const interval = setInterval(() => {
+            const now = Date.now()
+            vehicles.entries().forEach(([id, vehicle]) => {
+                if (now - vehicle.lastUpdate > 10000) vehicles.delete(id)
+            })
+        },1000)
         return () => {
             client.end();
+            clearInterval(interval)
             if (map && map.getSource("mqtt-data")) (map.getSource("mqtt-data") as GeoJSONSource).setData({
                 type: "FeatureCollection",
                 features: []
@@ -142,7 +150,8 @@ export interface Vehicle {
     position: [number, number],
     route: string,
     color: number,
-    rotation: number
+    rotation: number,
+    lastUpdate: number
 }
 export enum HFPLocationSource {
     GPS = "GPS",

@@ -35,8 +35,9 @@ export default function RouteDeparturesView() {
     if (curr.transitLeg && curr.trip && curr.route) {
       const depTime = curr.trip.departureStoptime
       const timeString = formatInTimeZone((depTime.serviceDay + depTime.scheduledDeparture) * 1000,"Europe/Helsinki", "HH:mm")
-      console.log(timeString)
-      return [{ ...prev[0], [curr.route.gtfsId.split(":")[1]]: getColor(curr.route.type) }, [...prev[1]]]
+      const idWithoutPrefix = curr.route.gtfsId.split(":")[1]
+      return [{ ...prev[0], [idWithoutPrefix]: getColor(curr.route.type) }, [...prev[1],
+    `/hfp/v2/journey/ongoing/+/+/+/+/${idWithoutPrefix}/${Number(curr.trip.directionId)+1}/+/${timeString}/#`]]
     }
     return prev
   }, [{}, new Array<string>()])
