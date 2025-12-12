@@ -1,5 +1,6 @@
 "use client"
 import { DepartureRow } from "@/app/routing/[stopType]/[id]/departures/page";
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 
 export interface DepTimeProps {
     dep: DepartureRow,
@@ -49,6 +50,5 @@ export function formatDepTime(relativeTime: number, serviceDate: number, include
     if (Math.abs(diff) < 10 * 60 * 1000) {
         return (includePrepositions ? "in " : "") + Math.floor(diff / (60 * 1000)) + " min"
     }
-    const date = new Date(time)
-    return (includePrepositions ? "at " : "") +`${date.getHours()}:${date.getMinutes().toString().padStart(2,"0")}`
+    return (includePrepositions ? "at " : "") + formatInTimeZone(time, "Europe/Helsinki", "HH:mm")
 }

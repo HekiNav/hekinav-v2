@@ -5,6 +5,7 @@ import Icon from "./icon";
 import { faCaretRight, faWalking } from "@fortawesome/free-solid-svg-icons";
 import RouteComposition from "./routecomposition";
 import Link from "next/link";
+import { formatInTimeZone } from "date-fns-tz";
 
 export interface ItineraryPreviewProps {
     itinerary: Itinerary,
@@ -55,6 +56,7 @@ export function legTimeToDepRow(time: LegTime): DepartureRow {
         serviceDay: 0,
         realtimeState: "",
         trip: {
+            directionId: "0",
             routeShortName: "",
             route: {
                 gtfsId: "",
@@ -65,8 +67,7 @@ export function legTimeToDepRow(time: LegTime): DepartureRow {
 }
 
 export function formatTime(time: string | number) {
-    const date = new Date(time)
-    return `${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`
+    return formatInTimeZone(time, "Europe/Helsinki", "HH:mm")
 }
 export function formatDuration(duration: number) {
     let str = ""

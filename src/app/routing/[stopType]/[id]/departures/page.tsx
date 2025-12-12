@@ -6,6 +6,7 @@ import DepTime from "@/components/deptime"
 import { StopType } from "@/app/routing/layout"
 import Link from "next/link"
 import StopOnMap from "./mapHandler"
+import MqttVehiclesOnMap from "@/components/mqtthandler"
 
 export default async function StopDeparturesView({
   params,
@@ -27,8 +28,21 @@ export default async function StopDeparturesView({
   const stop = (data as { stop: Stop, station: Stop })[stopType],
     { stoptimesWithoutPatterns, name, desc, platformCode, code } = stop
 
+  const colorTable = stop.routes.reduce((prev, curr) => ({ ...prev, [curr.gtfsId.split(":")[1]]: getColor(curr.type) }), {})
+
+  const routesWithDirections = stoptimesWithoutPatterns.filter((value, index, self) =>
+    index === self.findIndex((t) => (
+      t.trip.route.gtfsId === value.trip.route.gtfsId && t.trip.directionId === value.trip.directionId
+    ))
+  ).map(dep => ({...dep.trip.route, direction: dep.trip.directionId}))
+
+  const topics = stop.routes.length > 10 ?
+    [`/hfp/v2/journey/ongoing/+/+/+/+/+/+/+/+/${id.split(":")[1]}/#`] :
+    routesWithDirections.map(route => `/hfp/v2/journey/ongoing/+/+/+/+/${route.gtfsId.split(":")[1]}/${Number(route.direction)+1}/+/+/+/#`)
+
   return (
     <div className="p-4 min-w-80 w-7/10 max-w-160 flex flex-col gap-2 h-full pb-10">
+      <MqttVehiclesOnMap topics={topics} colorTable={colorTable}></MqttVehiclesOnMap>
       <StopOnMap stop={stop}></StopOnMap>
       <div className="text-lg flex flex-row gap-2 items-center -mb-3">
         <span className="text-2xl">{name}</span>
@@ -62,6 +76,20 @@ export default async function StopDeparturesView({
     </div>
   )
 }
+function getColor(type: number) {
+  if (type == 702) return 1
+  else if (type == 701) return 0
+  else if (type == 700) return 0
+  else if (type == 1) return 1
+  else if (type == 109) return 2
+  else if (type == 4) return 3
+  else if (type == 705) return 4
+  else if (type == 704) return 5
+  else if (type == 900) return 6
+  else if (type == 0) return 7
+  else return 8
+}
+
 const colors: {
   701: string,
   700: string,
@@ -94,7 +122,8 @@ export interface Stop {
   lon: number
   stoptimesWithoutPatterns: DepartureRow[]
   routes: {
-    type: number
+    type: number,
+    gtfsId: string
   }[]
 }
 
@@ -113,6 +142,7 @@ export interface DepartureRow {
   pickupType: string
 
   trip: {
+    directionId: string
     routeShortName: string
     route: {
       type: keyof typeof colors

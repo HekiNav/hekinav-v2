@@ -93,6 +93,10 @@ query Itineraries(
           }
           trip {
             directionId
+            departureStoptime {
+              scheduledDeparture
+              serviceDay
+            }
           }
           headsign
         }
@@ -173,7 +177,11 @@ export interface Leg {
   route?: LegRoute,
   headsign?: string,
   trip: {
-    directionId: string
+    directionId: string,
+    departureStoptime: {
+      scheduledDeparture: number,
+      serviceDay: number
+    }
   }
 }
 export interface LegRoute {

@@ -14,37 +14,6 @@ export interface RoutingSearchProps {
     time?: number,
     depArr?: DepArr
 }
-export function shiftToTimeZone(date: Date | number, timeZone: string) {
-    const dtf = new Intl.DateTimeFormat("en-US", {
-        timeZone,
-        hour12: false,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-    });
-
-    const parts = dtf.formatToParts(date);
-    const vals = Object.fromEntries(parts.map(p => [p.type, p.value]));
-
-    const shifted = new Date(
-        `${vals.year}-${vals.month}-${vals.day}T${vals.hour}:${vals.minute}:${vals.second}.000Z`
-    );
-
-    return shifted.getTime();
-}
-export function helsinkiTime(time?: number | Date) {
-    const asUTC = new Date(time || Date.now());
-
-    const helsinkiTs = shiftToTimeZone(asUTC, "Europe/Helsinki");
-
-    return helsinkiTs;
-}
-export function utcTime(time?: number | Date) {
-    return new Date(time || Date.now()).getTime();
-}
 export enum DepArr {
     DEP,
     ARR
@@ -54,7 +23,7 @@ export default function RoutingSearch(props: RoutingSearchProps) {
     const generateSuggestions = getAutocomplete
     const [origin, setOrigin] = useState<IEndStartPoint | null>(props.origin || null)
     const [destination, setDestination] = useState<IEndStartPoint | null>(props.destination || null)
-    const [time, setTime] = useState<number>(props.time || utcTime())
+    const [time, setTime] = useState<number>(props.time || 0)
     const [depArr, setDepArr] = useState<DepArr>(props.depArr || DepArr.DEP)
 
     const { map } = useMap()

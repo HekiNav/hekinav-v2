@@ -1,6 +1,6 @@
 "use client"
 import { IEndStartPoint, PlannedConnection } from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route"
-import RoutingSearch, { utcTime } from "./routingsearch"
+import RoutingSearch from "./routingsearch"
 import ItineraryPreview from "./itinerarypreview"
 import Link from "next/link"
 import ItineraryCollectionOnMap from "@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/options/mapHandler"
@@ -19,7 +19,7 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
   return (
     <div className="p-4 min-w-80 w-4/10 overflow-y-scroll">
       <ItineraryCollectionOnMap origin={from} destination={to} selected={selected} itineraries={data.edges.map(e => e.node)}></ItineraryCollectionOnMap>
-      <RoutingSearch origin={from} destination={to} time={utcTime(time)} depArr={depArr == "dep" ? 0 : 1}></RoutingSearch>
+      <RoutingSearch origin={from} destination={to} time={time} depArr={depArr == "dep" ? 0 : 1}></RoutingSearch>
       <h1 className="text-xl mb-1 mt-3">Routes</h1>
       <div className="flex flex-col gap-2">
         {...data.edges.map((e, i) => (
@@ -27,7 +27,6 @@ export default function ItinerarySidebar({ data, from, to, time, depArr }: Itine
         ))}
         <div hidden={data.edges.length != 0}>Could not find routes. Check parameters.</div>
       </div>
-
     </div>
   )
 }

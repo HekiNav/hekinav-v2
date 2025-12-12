@@ -1,7 +1,6 @@
 "use client"
 
 import Dropdown, { DropdownItem } from "./dropdown"
-import { helsinkiTime, shiftToTimeZone, utcTime } from "./routingsearch";
 
 export interface RoutingTimeInputProps {
     initialTime?: number,
@@ -9,16 +8,21 @@ export interface RoutingTimeInputProps {
     onTimeSet: (value: number) => void
     onDepArrSet: (value: number) => void
 }
-export default function RoutingTimeInput({ initialDepArr = 0, initialTime = utcTime(), onDepArrSet, onTimeSet }: RoutingTimeInputProps) {
+export default function RoutingTimeInput({ initialDepArr = 0, initialTime, onDepArrSet, onTimeSet }: RoutingTimeInputProps) {
     const times = new Array<DropdownItem>();
     for (let i = 0; i < 24; i++) {
         for (let j = 0; j < 4; j++) {
             times.push({ label: `${i}:${j === 0 ? `00` : 15 * j}`, value: (i-2) * 3600 + j * 15 * 60 });
         }
     }
+    if (!initialTime) {
+        // eslint-disable-next-line react-hooks/purity
+        initialTime = Date.now()
+        onTimeSet(initialTime)
+    }
     const dayStartUTC = (Math.floor(initialTime / 86400000) * 86400000)
 
-    const timeOffset = utcTime(new Date(dayStartUTC))
+    const timeOffset = dayStartUTC
 
     const dayTime = Math.round((initialTime) % (24 * 3600 * 1000) / (15 * 60 * 1000)) * 15 * 60 * 1000
 

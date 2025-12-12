@@ -31,8 +31,10 @@ export const querys: {
             platformCode
             lat
             lon
+            gtfsId
             routes {
                 type
+                gtfsId
             }
             stoptimesWithoutPatterns(numberOfDepartures: 50,omitCanceled: false, omitNonPickups: false){
             
@@ -51,6 +53,7 @@ export const querys: {
                 dropoffType
 
                 trip {
+                    directionId
                     route {
                         gtfsId
                         type
@@ -71,6 +74,7 @@ export const querys: {
             lon
             routes {
                 type
+                gtfsId
             }
             stoptimesWithoutPatterns(numberOfDepartures: 50,omitCanceled: false, omitNonPickups: false){
             
@@ -89,6 +93,7 @@ export const querys: {
                 dropoffType
 
                 trip {
+                    directionId
                     route {
                         type
                         gtfsId

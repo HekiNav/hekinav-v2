@@ -32,14 +32,16 @@ export default function MqttVehiclesOnMap({ topics, colorTable }: MqttVehiclesPr
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const [root, prefix, version, journey_type, temporal_type, event_type, transport_mode, operator_id, vehicle_number, route_id, direction_id, headsign, start_time, next_stop, geohash_level, geohash] = topic.split("/")
 
-            const color = colorTable[data.route || ""] || 8
+            const color = colorTable[data.route || ""]
+
+            console.log(colorTable, data.route, colorTable[data.route || ""])
 
             if (data && data.lat && data.long) {
                 const id = `${operator_id}/${vehicle_number}`
                 vehicles.set(id, {
                     position: [data.long, data.lat],
                     route: data.desi || "?",
-                    color: color,
+                    color: Number.isNaN(color) ? 8 : color,
                     rotation: data.hdg || 0
                 })
             }
@@ -82,7 +84,11 @@ export default function MqttVehiclesOnMap({ topics, colorTable }: MqttVehiclesPr
             })
         }
         return () => {
-            client.end()
+            client.end();
+            if (map && map.getSource("mqtt-data")) (map.getSource("mqtt-data") as GeoJSONSource).setData({
+                type: "FeatureCollection",
+                features: []
+            })
         }
     })
 
