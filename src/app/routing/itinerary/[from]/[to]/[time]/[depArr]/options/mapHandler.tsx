@@ -1,59 +1,93 @@
 "use client"
-import maplibregl, { GeoJSONSource } from "maplibre-gl";
 import { useMap } from "react-map-gl/maplibre";
-import { RoutePattern, Route } from "@/app/routing/route/[id]/[directionId]/page";
 import { decode } from "@googlemaps/polyline-codec";
+import { IEndStartPoint, Itinerary } from "../api/route";
+import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
 
-export default function RouteOnMap({ route, pattern }: { route: Route, pattern: RoutePattern, depArr: string, time: string }) {
+export default function ItineraryCollectionOnMap({ itineraries, selected, origin, destination }: { itineraries: Itinerary[], selected?: number | null, origin: IEndStartPoint, destination: IEndStartPoint }) {
 
     const { map } = useMap()!
-    const color = getColor(route.type);
 
-    if (!map || !map.getSource("temp-data")) return <>MAP NOT FOUND</>
+    const stops: GeoJSON.Feature[] = []
 
-    const patternShape: [number, number][] = decode(pattern.patternGeometry.points).map(([lat, lon]) => [lon, lat])
+    function addThingsToMap() {
+        if (!map || !map.getSource("temp-data")) return setTimeout(addThingsToMap, 1000)
 
-    const bounds = patternShape.reduce((bounds, coord) => {
-        return bounds.extend(coord);
-    }, new maplibregl.LngLatBounds([patternShape[0], patternShape[0]]));
 
-    map.fitBounds(bounds,{
-        essential: true,
-        padding: 100
-    })
-
-    ; (map.getSource("temp-data") as GeoJSONSource).setData({
-        type: "FeatureCollection",
-        features: [
-            {
-                type: "Feature",
-                properties: {
-                    type: "route-stop",
-                    color: color
-                },
-                geometry: {
-                    type: "MultiPoint",
-                    coordinates: [
-                        ...pattern.stops.map(s => [s.lon, s.lat])
-                    ]
+        const patternShapes: GeoJSON.Feature[][] = itineraries.map((itinerary, index) => {
+            const thisSelected = index == selected
+            return itinerary.legs.map(leg => {
+                const color = getColor(leg.route?.type || 1000)
+                if (leg.transitLeg && thisSelected) {
+                    stops.push(...([leg.to, leg.from].map(p => ({
+                        type: ("Feature" as never),
+                        properties: {
+                            type: "route-stop",
+                            color: color
+                        },
+                        geometry: {
+                            type: ("Point" as never),
+                            coordinates: [
+                                p.stop?.lon || 0, p.stop?.lat || 0
+                            ]
+                        }
+                    }))))
                 }
+                return {
+                    type: "Feature",
+                    properties: {
+                        type: thisSelected ? (leg.transitLeg ? "route-path" : "walk-path") : "bg-route-path",
+                        color: color
+                    },
+                    geometry: {
+                        type: "LineString",
+                        coordinates: decode(leg.legGeometry.points).map(([lat, lon]) => [lon, lat])
+                    }
+                }
+            })
+        })
+        const originFeat = {
+            type: ("Feature" as never),
+            properties: {
+                type: "origin-marker"
             },
-            {
-                type: "Feature",
-                properties: {
-                    type: "route-path",
-                    color: color
-                },
-                geometry: {
-                    type: "LineString",
-                    coordinates: patternShape
-                }
+            geometry: {
+                type: ("Point" as never),
+                coordinates: Object.values(origin.location.coordinate).reverse()
             }
-        ]
-    })
+        }
+        const destinationFeat = {
+            type: ("Feature" as never),
+            properties: {
+                type: "destination-marker"
+            },
+            geometry: {
+                type: ("Point" as never),
+                coordinates: Object.values(destination.location.coordinate).reverse()
+            }
+        }
 
+            ; (map.getSource("temp-data") as GeoJSONSource).setData({
+                type: "FeatureCollection",
+                features: [
+                    ...stops,
+                    ...patternShapes.flat(),
+                    destinationFeat,
+                    originFeat
+                ]
 
-
+            })
+        const stopsAsPoints = ([...stops, originFeat, destinationFeat] as GeoJSON.Feature<GeoJSON.Point, GeoJSON.GeoJsonProperties>[])
+        
+        const firstCoords = stopsAsPoints[0].geometry.coordinates as [number, number]
+        const bounds = stopsAsPoints.reduce((prev, curr) => prev.extend(curr.geometry.coordinates as [number, number]), new LngLatBounds(firstCoords, firstCoords))
+        map.fitBounds(bounds, {
+            essential: true,
+            padding: 100,
+            duration: 2000
+        })
+    }
+    addThingsToMap()
     return (<></>)
 }
 function getColor(type: number) {

@@ -1,30 +1,42 @@
-"use server"
+"use client"
 
-import { getItineraryData } from "../api/route"
+import { useContext, useEffect, useState } from "react"
 import ItinerarySidebar from "@/components/itineraryoptionssidebar"
+import { itineraryContext } from "./contextMaker"
+import { BA, IEndStartPoint, Itinerary, PlannedConnection } from "../api/route"
 
-export default async function RouteDeparturesView({
-  params,
-}: {
-  params: Promise<{ from: string, to: string, depArr: string, time: string }>
-}) {
-  const { from, to, depArr, time } = await params
+export default function ItineraryOptionsView() {
+  const c = useContext(itineraryContext)
 
-  const
-      fromJ = JSON.parse(decodeURIComponent(from)),
-      toJ = JSON.parse(decodeURIComponent(to))
+  const [dataState, setData] = useState<PlannedConnection | null>(null)
 
-  const { data, error } = await getItineraryData(fromJ, toJ, depArr, Number(time))
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setData(data)
+  })
 
-  if (error || !data) return (
-    <div className="p-4 min-w-80 w-4/10">
-      <h1 className="text-xl text-red-500">500 Internal server error</h1>
-      <div className="text-lg">
-        Failed to get route data
-      </div>
+  if (!c) return (
+    <div>
+      err
     </div>
   )
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { from, to, depArr, time, data, loadMore = async (_from: IEndStartPoint, _to: IEndStartPoint, _depArr: string, _time: number, _type: 1 | 2, _cursor: string) => null } = c
+
+  
+
+
+
+  async function more(ba: 1 | 2) {
+    const newConnection = await loadMore(from, to, depArr, time, ba, ba == BA.BEFORE ? data.pageInfo.startCursor : data.pageInfo.endCursor)
+    if (!newConnection) return
+    console.log(dataState, newConnection)
+    setData({
+      ...newConnection
+    })
+  }
+
   return (
-    <ItinerarySidebar from={fromJ} to={toJ} time={Number(time)} depArr={depArr} data={data.planConnection}></ItinerarySidebar>
+    <ItinerarySidebar before={() => more(1)} after={() => more(2)} from={from} to={to} time={Number(time)} depArr={depArr} data={dataState}></ItinerarySidebar>
   )
 }

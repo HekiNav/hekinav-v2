@@ -1,6 +1,5 @@
 import { type NextRequest } from 'next/server'
 import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
-import { StopType } from '@/app/routing/layout';
 import { TypedDocumentNode } from '@apollo/client';
 
 const { DIGITRANSIT_SUBSCRIPTION_KEY = "" } = process.env
@@ -81,12 +80,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     const [requestType, extraParam] = extraParams
 
-    const result = await getRouteData(id, requestType)
+    const result = await getRouteData(id, requestType, extraParam)
 
     return Response.json(result)
 }
 export async function getRouteData(id: string, requestType: RouteRequestType, extraParam?: string) {
-
 
     const query = querys[requestType]
 

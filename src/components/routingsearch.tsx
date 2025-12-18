@@ -6,19 +6,13 @@ import { useMap } from 'react-map-gl/maplibre'
 import RoutingTimeInput from './routingtimeinput'
 import { IEndStartPoint } from '@/app/routing/itinerary/[from]/[to]/[time]/[depArr]/api/route'
 import { useRouter } from 'next/navigation'
-import moment from 'moment-timezone'
+import { GeoJSONSource, LngLatBounds } from 'maplibre-gl'
 
 export interface RoutingSearchProps {
     destination?: IEndStartPoint,
     origin?: IEndStartPoint,
     time?: number,
     depArr?: DepArr
-}
-export function helsinkiTime(time?: number | Date) {
-    return moment(time).utc(true).tz("Europe/Helsinki").valueOf()
-}
-export function utcTime(time?: number | Date) {
-    return moment(time).tz("UTC").valueOf()
 }
 export enum DepArr {
     DEP,
@@ -29,7 +23,7 @@ export default function RoutingSearch(props: RoutingSearchProps) {
     const generateSuggestions = getAutocomplete
     const [origin, setOrigin] = useState<IEndStartPoint | null>(props.origin || null)
     const [destination, setDestination] = useState<IEndStartPoint | null>(props.destination || null)
-    const [time, setTime] = useState<number>(props.time || utcTime())
+    const [time, setTime] = useState<number>(props.time || 0)
     const [depArr, setDepArr] = useState<DepArr>(props.depArr || DepArr.DEP)
 
     const { map } = useMap()
@@ -59,16 +53,64 @@ export default function RoutingSearch(props: RoutingSearchProps) {
         }
         const suggestion = value as Suggestion
         const center: [number, number] = [suggestion.properties?.lat, suggestion.properties?.lon]
+        const originCenter: [number, number] | null = name == "origin" ? center : (origin ? [origin?.location?.coordinate.longitude || 0, origin?.location?.coordinate.latitude || 0] : null)
+        const destinationCenter: [number, number] | null = name == "destination" ? center : (destination ? [destination?.location?.coordinate.longitude || 0, destination?.location?.coordinate.latitude || 0] : null)
 
-        if (!map) return;
+        if (!map || !map.getSource("temp-data")) return;
 
-        map.flyTo({
-            center: center,
-            zoom: 14,
+        interface fooba {
+            type: "Feature",
+            properties: { [key: string]: string },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            geometry: any
+        }
+        const feats = new Array<fooba>()
+
+        if (originCenter) feats.push({
+            type: "Feature",
+            properties: {
+                type: "origin-marker"
+            },
+            geometry: {
+                type: "Point",
+                coordinates: originCenter
+            }
+        });
+
+        if (destinationCenter) feats.push({
+            type: "Feature",
+            properties: {
+                type: "destination-marker"
+            },
+            geometry: {
+                type: "Point",
+                coordinates: destinationCenter
+            }
+        })
+
+
+        let bounds = new LngLatBounds(center, center)
+
+        if (originCenter) bounds = bounds.extend(originCenter)
+        if (destinationCenter) bounds = bounds.extend(destinationCenter)
+
+        if (originCenter && destinationCenter) map.fitBounds(bounds, {
+            padding: 100,
             duration: 5000,
             animate: true,
             essential: true
         })
+        else map.easeTo({
+            center: center,
+            zoom: 13,
+            essential: true
+        })
+
+            ; (map.getSource("temp-data") as GeoJSONSource).setData({
+                type: "FeatureCollection",
+                features: feats
+            })
+
     }
     function search() {
         if (!origin || !destination) {
@@ -76,7 +118,6 @@ export default function RoutingSearch(props: RoutingSearchProps) {
             return
         }
         const url = `/routing/itinerary/${encodeURIComponent(JSON.stringify(origin))}/${encodeURIComponent(JSON.stringify(destination))}/${time}/${depArr == 0 ? "dep" : "arr"}/options/`
-        console.log(time)
         nav.push(url)
     }
     return (

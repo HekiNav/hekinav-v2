@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const hekinavConfig: HekinavConfig = {
-    paths: [{ n: "Home", p: "/" }, { n: "Routing", p: "/routing" }, { n: "Test", p: "/test" }],
+    paths: [{ n: "Home", p: "/" }, { n: "Routing", p: "/routing" }, { n: "Test", p: "/test" }, {n: "Github", e:true, p: "https://github.com/HekiNav/hekinav-v2"}],
     mapStyle: "/style.json"
   }
   const paths = hekinavConfig.paths
